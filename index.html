@@ -34,6 +34,24 @@
     </style>
 </head>
 <body>
+    <script>
+        // Em mobile, 100vh pode incluir/excluir a barra do navegador dependendo do estado.
+        // Esse ajuste usa a altura real visível e evita o canvas ficar "cortado" no landscape.
+        (function () {
+            function setVh() {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+            window.addEventListener('resize', setVh, { passive: true });
+            window.addEventListener('orientationchange', setVh, { passive: true });
+            setVh();
+
+            // Aplica a variável no body/html (sem depender de CSS moderno como 100dvh).
+            const style = document.createElement('style');
+            style.textContent = `html, body { height: calc(var(--vh, 1vh) * 100); }`;
+            document.head.appendChild(style);
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <!-- cache-bust para garantir refresh quando mexer nos arquivos -->
     <script src="scenes/BootScene.js?v=20260228"></script>
