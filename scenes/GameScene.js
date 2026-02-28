@@ -74,6 +74,12 @@ class GameScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd    = this.input.keyboard.addKeys('W,A,S,D');
         this.btnLeft = false; this.btnRight = false; this.btnJump = false;
+
+        // IMPORTANTE (mobile): por padrão o Phaser cria apenas 1 pointer.
+        // Para conseguir segurar "andar" e "pular" ao mesmo tempo no celular,
+        // precisamos habilitar multi-touch adicionando pointers extras.
+        this.input.addPointer(2);
+
         this.setupTouchControls();
 
         // ── Timer ────────────────────────────────────────────────────────────
@@ -219,7 +225,10 @@ class GameScene extends Phaser.Scene {
             const txt = this.add.text(0, 1, label, {
                 fontSize:'20px', color:'#fff', fontFamily:'monospace'
             }).setOrigin(0.5);
-            c.add([bg, txt]); c.setSize(sz, sz); c.setInteractive();
+            c.add([bg, txt]);
+            c.setSize(sz, sz);
+            // interactive necessário para receber pointer events
+            c.setInteractive();
             return c;
         };
 
@@ -227,10 +236,38 @@ class GameScene extends Phaser.Scene {
         const right = mkBtn(pad+sz*1.5+8,         H-pad-sz/2, '►');
         const jump  = mkBtn(W-pad-sz/2,            H-pad-sz/2, '▲');
 
-        [[left,'btnLeft'],[right,'btnRight'],[jump,'btnJump']].forEach(([btn, prop]) => {
-            btn.on('pointerdown', () => this[prop]=true);
-            btn.on('pointerup',   () => this[prop]=false);
-            btn.on('pointerout',  () => this[prop]=false);
+        // Multi-touch robusto: cada botão "trava" no pointerId que iniciou o toque.
+        // Assim, um segundo dedo pode apertar outro botão sem soltar o primeiro.
+        this._touchBtns = [
+            { btn: left,  prop: 'btnLeft',  pointerId: null },
+            { btn: right, prop: 'btnRight', pointerId: null },
+            { btn: jump,  prop: 'btnJump',  pointerId: null },
+        ];
+
+        const releasePointer = (pointer) => {
+            this._touchBtns.forEach((b) => {
+                if (b.pointerId === pointer.id) {
+                    b.pointerId = null;
+                    this[b.prop] = false;
+                }
+            });
+        };
+
+        this._touchBtns.forEach((b) => {
+            b.btn.on('pointerdown', (pointer) => {
+                // Se o botão já estiver pressionado por outro dedo, não troca.
+                if (b.pointerId !== null) return;
+                b.pointerId = pointer.id;
+                this[b.prop] = true;
+            });
+
+            // Se o dedo sair do botão, considera como "soltou" (controle virtual).
+            b.btn.on('pointerout', (pointer) => releasePointer(pointer));
+            b.btn.on('pointerup',  (pointer) => releasePointer(pointer));
         });
+
+        // Fallback: se o dedo soltar fora do botão, garante reset do estado.
+        this.input.on('pointerup', (pointer) => releasePointer(pointer));
+        this.input.on('pointercancel', (pointer) => releasePointer(pointer));
     }
 }
