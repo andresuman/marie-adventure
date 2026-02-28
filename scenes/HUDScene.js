@@ -40,29 +40,6 @@ class HUDScene extends Phaser.Scene {
         this.gameScene.events.on('livesChanged', (v) => {
             this.heartIcons.forEach((h, i) => h.setAlpha(i < v ? 1 : 0.2));
         });
-
-        // ── Fullscreen (mobile-friendly) ───────────────────────────────────
-        // Observação: Fullscreen só pode ser acionado via gesto do usuário.
-        // Em iOS Safari, o fullscreen real tem limitações; uma alternativa é
-        // “Adicionar à Tela de Início” (PWA-like) para abrir sem barras.
-        const fsLabel = this.scale.width < 520 ? '⛶' : 'TELA CHEIA';
-        const fs = this.add.text(W - 6, 30, fsLabel, {
-            fontFamily: 'monospace',
-            fontSize: '10px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 3,
-            backgroundColor: 'rgba(0,0,0,0.25)',
-            padding: { x: 4, y: 2 }
-        }).setOrigin(1, 0).setScrollFactor(0).setDepth(1000);
-
-        fs.setInteractive({ useHandCursor: true });
-        fs.on('pointerup', () => {
-            const s = this.scale;
-            if (!s.fullscreen.available) return;
-            if (s.isFullscreen) s.stopFullscreen();
-            else s.startFullscreen(false);
-        });
     }
 
     update() {
