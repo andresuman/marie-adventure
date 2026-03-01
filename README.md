@@ -4,6 +4,10 @@ Jogo 2D de plataforma em **Phaser 3** (HTML/JS puro), rodando direto no navegado
 
 Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia** (1926–2026). A cientista corre pelas ruas da cidade termal desviando das capivaras que cruzam seu caminho.
 
+## Jogar online
+
+Disponível em: https://andresuman.github.io/marie-adventure/
+
 ## Como jogar
 
 | Ação | Teclado | Mobile |
