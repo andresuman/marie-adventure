@@ -50,7 +50,7 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Objetivo
-        txt(W/2, 90, 'Ajude Marie a chegar até a garrafa de', {
+        txt(W/2, 90, 'Ajude Marie Curie a chegar até a garrafa de', {
             fontSize: '12px',
             color: '#ffffff',
             stroke: '#000000',

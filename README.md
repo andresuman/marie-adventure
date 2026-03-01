@@ -1,4 +1,4 @@
-# A Aventura de Marie
+# A Aventura de Marie Curie
 
 Jogo 2D de plataforma em **Phaser 3** (HTML/JS puro), rodando direto no navegador — sem instalação, sem dependências de build.
 
