@@ -66,7 +66,7 @@ marie-adventure/
 ├── audio/
 │   ├── AudioUnlock.js      # Desbloqueio da Web Audio API no mobile
 │   ├── MusicManager.js     # Motor de música chiptune (WebAudio puro)
-│   └── TardesDeLindoia.js  # Melodia da fase (waltz em Sol maior)
+│   └── GameTheme.js        # Melodia da fase (waltz em Sol maior)
 ├── assets/                 # Sprites e cenário (PNG)
 └── docs/                   # Referências visuais e spritesheets originais
 ```
@@ -74,5 +74,3 @@ marie-adventure/
 ## Créditos
 
 - Engine: [Phaser 3](https://phaser.io/) v3.60
-- Cenário: inspirado em Águas de Lindóia — Praça, Balneário Municipal, Hotel Glória, Igreja N.S. das Graças
-- Desenvolvido por **Andre Suman** ([@andresuman](https://github.com/andresuman))

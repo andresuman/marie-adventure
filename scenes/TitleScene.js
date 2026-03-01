@@ -6,8 +6,8 @@ class TitleScene extends Phaser.Scene {
             if (!window.MusicManager) return;
             if (window.GAME_SETTINGS && window.GAME_SETTINGS.musicEnabled === false) return;
             // Só inicia uma vez (e evita retrigger em hover/click repetidos)
-            if (!window.MusicManager.isPlaying('tardes-de-lindoia')) {
-                window.MusicManager.play('tardes-de-lindoia', { loop: true });
+            if (!window.MusicManager.isPlaying('game-theme')) {
+                window.MusicManager.play('game-theme', { loop: true });
             }
         } catch (e) {}
     }

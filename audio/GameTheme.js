@@ -1,4 +1,4 @@
-// Registers a simplified (chiptune-ish) melody based on the provided lead line.
+// Registers the game's chiptune background theme (waltz, 3/4, G major).
 (function () {
     const MM = window.MusicManager;
     const U = window.MusicUtils;
@@ -71,7 +71,7 @@
         chord.forEach(n => bass.push({ note: n, startBeat: mStart + 2, beats: 1 }));
     }
 
-    MM.registerSong('tardes-de-lindoia', {
+    MM.registerSong('game-theme', {
         bpm,
         totalBeats,
         lead,
