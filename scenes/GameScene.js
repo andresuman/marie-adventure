@@ -151,12 +151,13 @@ class GameScene extends Phaser.Scene {
 
     // ── Colisão Marie × Capivara ──────────────────────────────────────────────
     onContact(marie, capy) {
+        // Guard: Phaser pode acionar overlap mesmo após game over — evita triggerGameOver() duplo.
         if (this.dead || this.invincible) return;
         const marieFeet = marie.body.bottom;
         const capyTop   = capy.body.top;
 
         if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
-            // Pisou na capivara!
+            // Pulou em cima da capivara!
             const visualBottom = capy.y + capy.displayHeight / 2;
             capy.anims.stop();
             capy.setTexture(Phaser.Math.RND.pick(['capy_flat1', 'capy_flat2']));
@@ -221,7 +222,7 @@ class GameScene extends Phaser.Scene {
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
     _sfx(fn) {
         try {
-            // Reuse the same unlocked SFX context when available (AudioUnlock.js)
+            // Reutiliza o contexto SFX já desbloqueado pelo AudioUnlock.js (evita contextos duplicados)
             if (!this._ac) {
                 this._ac = window.SFX_AUDIO_CONTEXT || new (window.AudioContext || window['webkitAudioContext'])();
             }

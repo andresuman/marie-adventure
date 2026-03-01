@@ -16,7 +16,6 @@ class GameOverScene extends Phaser.Scene {
             this.add.text(x, y, str, { fontFamily: 'monospace', resolution: 3, ...style })
                 .setOrigin(0.5);
 
-        // Título
         txt(W/2, 30, 'FIM DE JOGO', {
             fontSize: '28px',
             color: '#ffe040',
@@ -24,7 +23,6 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 6
         });
 
-        // Subtítulo
         txt(W/2, 62, 'As capivaras venceram dessa vez...', {
             fontSize: '13px',
             color: '#ff8844',
@@ -32,7 +30,6 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        // Pontuação e tempo
         txt(W/2, 90, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
@@ -63,7 +60,6 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 3
         });
 
-        // Botão
         const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
@@ -77,7 +73,7 @@ class GameOverScene extends Phaser.Scene {
         btn.on('pointerout',   () => btn.setBackgroundColor('#ffdd00'));
         btn.on('pointerdown',  () => this.scene.start('GameScene'));
 
-        // Dev
+        // Crédito do desenvolvedor
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '11px',
             color: '#cccccc',

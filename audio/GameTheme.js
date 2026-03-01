@@ -1,36 +1,36 @@
-// Registers the game's chiptune background theme (waltz, 3/4, G major).
+// Registra o tema chiptune de fundo do jogo (valsa, 3/4, Sol maior).
 (function () {
     const MM = window.MusicManager;
     const U = window.MusicUtils;
     if (!MM || !U) return;
 
-    // Default: slow waltz
+    // Valsa lenta
     const bpm = 100;
     const beatsPerMeasure = 3; // 3/4
 
-    // Lead melody tokens: [NOTE, DURATION_TOKEN]
-    // Duration token is in sheet notation (4=quarter (1 beat), 2=half (2 beats), 2.=dotted half (3 beats))
+    // Tokens da melodia principal: [NOTA, TOKEN_DE_DURAÇÃO]
+    // Token de duração em notação de pauta (4=semínima/1 tempo, 2=mínima/2 tempos, 2.=mínima pontuada/3 tempos)
     const leadTokens = [
-        // Measures 1-4
+        // Compassos 1–4
         ['D4', '4'], ['G4', '4'], ['B4', '4'],
         ['D5', '2'], ['G5', '4'],
         ['F#5', '4'], ['E5', '4'], ['D5', '4'],
         ['C5', '2'], ['A4', '4'],
 
-        // Measures 5-8
+        // Compassos 5–8
         ['D4', '4'], ['F#4', '4'], ['A4', '4'],
         ['C5', '2'], ['F#5', '4'],
         ['E5', '4'], ['D5', '4'], ['C5', '4'],
-        // Close phrase: B4 dotted half
+        // Encerra a frase: B4 mínima pontuada
         ['B4', '2.'],
 
-        // Measures 9-12
+        // Compassos 9–12
         ['B4', '4'], ['C5', '4'], ['D5', '4'],
         ['F#5', '2'], ['E5', '4'],
         ['E5', '4'], ['D5', '4'], ['C5', '4'],
         ['B4', '2'], ['G4', '4'],
 
-        // Measures 13-16
+        // Compassos 13–16
         ['G4', '4'], ['A4', '4'], ['B4', '4'],
         ['D5', '2'], ['C5', '4'],
         ['C5', '4'], ['B4', '4'], ['A4', '4'],
@@ -45,11 +45,11 @@
         beat += beats;
     }
 
-    // Total length: round up to full measures so the loop feels musical
+    // Arredonda para compassos completos para que o loop sooe musical
     const measures = Math.ceil(beat / beatsPerMeasure);
     const totalBeats = measures * beatsPerMeasure;
 
-    // Simple accompaniment (oom-pah-pah) following the harmonic hint.
+    // Acompanhamento simples (oom-pah-pah) seguindo o contorno harmônico da melodia.
     const roots = [
         'G2','G2','G2','G2',
         'D2','D2','D2','D2',

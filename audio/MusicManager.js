@@ -1,10 +1,10 @@
-// Simple WebAudio music manager (no external files)
-// Exposes: window.MusicManager
+// Gerenciador de música via WebAudio puro (sem arquivos externos)
+// Expõe: window.MusicManager
 (function () {
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
     function noteToMidi(note) {
-        // Examples: C4, F#5, Bb3
+        // Exemplos: C4, F#5, Bb3
         const m = /^([A-G])([#b]?)(-?\d+)$/.exec(String(note).trim());
         if (!m) return null;
 
@@ -32,8 +32,8 @@
     }
 
     function durationTokenToBeats(tok) {
-        // Uses the common sheet notation: 4=quarter (1 beat), 2=half (2 beats), 8=eighth (0.5 beat)
-        // Dotted: 2. = dotted half (3 beats)
+        // Usa a notação de pauta: 4=semínima (1 tempo), 2=mínima (2 tempos), 8=colcheia (0.5 tempo)
+        // Pontuada: 2. = mínima pontuada (3 tempos)
         const s = String(tok).trim();
         const dotted = s.endsWith('.');
         const denom = parseFloat(dotted ? s.slice(0, -1) : s);
@@ -85,7 +85,7 @@
 
             const ac = this.ensureAudioContext();
 
-            // Autoplay policies: resume may need to be triggered by a user gesture.
+            // Política de autoplay: o resume pode precisar ser disparado por um gesto do usuário.
             try { if (ac.state === 'suspended') await ac.resume(); } catch (e) {}
 
             this._loop = !(opts && opts.loop === false);
@@ -96,7 +96,7 @@
         stop() {
             this._playingKey = null;
             if (this._loopTimer) { clearTimeout(this._loopTimer); this._loopTimer = null; }
-            // stop any scheduled oscillators that haven't played yet
+            // Para todos os oscillators agendados que ainda não foram reproduzidos
             const now = this._ac ? this._ac.currentTime : 0;
             this._scheduled.forEach(n => {
                 try {
@@ -111,7 +111,7 @@
             const song = this._songs.get(this._playingKey);
             const ac = this.ensureAudioContext();
 
-            // Clean up already-finished oscillators to prevent unbounded memory growth
+            // Remove oscillators já finalizados para evitar crescimento ilimitado de memória
             const now = ac.currentTime;
             this._scheduled = this._scheduled.filter(o => (o._stopAt || 0) > now);
 
@@ -124,7 +124,7 @@
 
             this._nextStart = startAt + totalSeconds;
             if (this._loop) {
-                // Schedule next loop slightly before the end.
+                // Agenda a próxima repetição um pouco antes do fim para evitar lacunas.
                 const ms = Math.max(10, (totalSeconds - 0.15) * 1000);
                 this._loopTimer = setTimeout(() => this._scheduleLoop(), ms);
             }
@@ -141,6 +141,7 @@
                 o.type = type;
                 o.frequency.setValueAtTime(freq, when);
 
+                // Envelope ADSR simplificado: apenas attack e release para suavizar cliques de áudio
                 const attack = 0.01;
                 const release = 0.03;
                 const end = when + Math.max(0.02, dur);
@@ -159,14 +160,14 @@
                 this._scheduled.push(o);
             };
 
-            // Lead
+            // Melodia principal
             (song.lead || []).forEach(ev => {
                 const when = startAt + ev.startBeat * spb;
                 const dur = ev.beats * spb;
                 playOsc(noteToFreq(ev.note), when, dur, song.leadWave || 'square', song.leadAmp ?? 0.10);
             });
 
-            // Bass (waltz oom-pah-pah)
+            // Acompanhamento (baixo oom-pah-pah, estilo valsa)
             (song.bass || []).forEach(ev => {
                 const when = startAt + ev.startBeat * spb;
                 const dur = ev.beats * spb;

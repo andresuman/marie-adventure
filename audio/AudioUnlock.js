@@ -1,6 +1,6 @@
-// Audio unlock helper for mobile browsers (iOS Safari, etc.)
-// Goal: allow SFX to play after the first user gesture WITHOUT starting music.
-// Exposes: window.AudioUnlock.unlock()
+// Utilitário para desbloquear o WebAudio em browsers mobile (iOS Safari, etc.)
+// Objetivo: permitir SFX após o primeiro gesto do usuário, SEM iniciar a música.
+// Expõe: window.AudioUnlock.unlock()
 (function () {
     function getSfxContext() {
         if (!window.SFX_AUDIO_CONTEXT) {
@@ -16,8 +16,8 @@
         } catch (e) {}
     }
 
-    // Some browsers only fully "unlock" after something is scheduled on the audio graph.
-    // We schedule an inaudible blip (very low gain + very short duration).
+    // Alguns browsers só desbloqueiam completamente quando algo é agendado no grafo de áudio.
+    // Agendamos um bip inaudível (ganho mínimo + duração mínima) para garantir o desbloqueio.
     function silentBlip(ac) {
         try {
             const o = ac.createOscillator();
@@ -37,13 +37,13 @@
         async unlock() {
             if (this.unlocked) return;
 
-            // SFX context (used by GameScene)
+            // Contexto SFX (usado pelo GameScene)
             const sfx = getSfxContext();
             await resumeContext(sfx);
             silentBlip(sfx);
 
-            // Intentionally do NOT touch the music system here.
-            // If/when music is enabled, it should be started explicitly by code/UI.
+            // Intencionalmente NÃO tocamos no sistema de música aqui.
+            // A música deve ser iniciada explicitamente pelo código/UI quando habilitada.
 
             this.unlocked = true;
         }

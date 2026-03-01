@@ -13,8 +13,8 @@ class TitleScene extends Phaser.Scene {
     }
 
     async _ensureAudioUnlocked() {
-        // Mobile browsers require a user gesture before any WebAudio can play.
-        // This unlock is for SFX only; it does NOT start music.
+        // Browsers mobile exigem um gesto do usuário antes de reproduzir qualquer WebAudio.
+        // Este desbloqueio é apenas para SFX; não inicia a música.
         try {
             if (window.AudioUnlock && window.AudioUnlock.unlock) {
                 await window.AudioUnlock.unlock();

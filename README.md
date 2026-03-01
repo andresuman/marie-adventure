@@ -16,13 +16,13 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 | Pular | ↑ ou W ou Espaço | ▲ |
 
 - **Objetivo:** chegue até a garrafa de água Lindoya no fim da fase.
-- Pise em cima de uma capivara para eliminá-la (+100 pontos).
+- Pule em cima de uma capivara para eliminá-la (+100 pontos).
 - Encostar lateralmente na capivara custa uma vida.
 - O jogo termina ao perder todas as 3 vidas ou ao esgotar o tempo.
 
 ## Áudio
 
-- **SFX** (pulo, pisar na capivara, dano, vitória) ativos por padrão em todos os navegadores.
+- **SFX** (pulo, pular em cima da capivara, dano, vitória) ativos por padrão em todos os navegadores.
 - **Música de fundo** existe no código mas está desabilitada por padrão. Para ativar, abra o console do navegador **antes de clicar em JOGAR** e execute:
   ```js
   window.GAME_SETTINGS.musicEnabled = true;
@@ -74,7 +74,7 @@ marie-adventure/
 ## Licença
 
 [MIT](LICENSE) — Andre Suman Pereira, 2026.
-Contribuições são bem-vindas via pull request.
+Contribuições são bem-vindas — veja o [guia de contribuição](CONTRIBUTING.md).
 
 ## Créditos
 
