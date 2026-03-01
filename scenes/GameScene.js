@@ -221,7 +221,10 @@ class GameScene extends Phaser.Scene {
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
     _sfx(fn) {
         try {
-            if (!this._ac) this._ac = new (window.AudioContext || window['webkitAudioContext'])();
+            // Reuse the same unlocked SFX context when available (AudioUnlock.js)
+            if (!this._ac) {
+                this._ac = window.SFX_AUDIO_CONTEXT || new (window.AudioContext || window['webkitAudioContext'])();
+            }
             if (this._ac.state === 'suspended') this._ac.resume();
             fn(this._ac);
         } catch (e) {}

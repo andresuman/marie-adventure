@@ -12,6 +12,16 @@ class TitleScene extends Phaser.Scene {
         } catch (e) {}
     }
 
+    async _ensureAudioUnlocked() {
+        // Mobile browsers require a user gesture before any WebAudio can play.
+        // This unlock is for SFX only; it does NOT start music.
+        try {
+            if (window.AudioUnlock && window.AudioUnlock.unlock) {
+                await window.AudioUnlock.unlock();
+            }
+        } catch (e) {}
+    }
+
     create() {
         const W = this.scale.width;
         const H = this.scale.height;
@@ -67,6 +77,7 @@ class TitleScene extends Phaser.Scene {
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
         btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
         btn.on('pointerdown',  () => {
+            this._ensureAudioUnlocked();
             this._ensureMusicStarted();
             this.scene.start('GameScene');
         });
@@ -81,12 +92,14 @@ class TitleScene extends Phaser.Scene {
 
         // Teclado também inicia
         this.input.keyboard.once('keydown', () => {
+            this._ensureAudioUnlocked();
             this._ensureMusicStarted();
             this.scene.start('GameScene');
         });
 
         // iOS/Safari: às vezes só destrava áudio em 'pointerdown' do canvas.
-        this.input.once('pointerdown', () => this._ensureMusicStarted());
+        // Aqui destravamos apenas o WebAudio (SFX). Música continua desligada por padrão.
+        this.input.once('pointerdown', () => this._ensureAudioUnlocked());
 
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 600, yoyo: true, repeat: -1 });
     }
