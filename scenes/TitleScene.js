@@ -1,6 +1,17 @@
 class TitleScene extends Phaser.Scene {
     constructor() { super({ key: 'TitleScene' }); }
 
+    _ensureMusicStarted() {
+        try {
+            if (!window.MusicManager) return;
+            if (window.GAME_SETTINGS && window.GAME_SETTINGS.musicEnabled === false) return;
+            // Só inicia uma vez (e evita retrigger em hover/click repetidos)
+            if (!window.MusicManager.isPlaying('tardes-de-lindoia')) {
+                window.MusicManager.play('tardes-de-lindoia', { loop: true });
+            }
+        } catch (e) {}
+    }
+
     create() {
         const W = this.scale.width;
         const H = this.scale.height;
@@ -55,7 +66,10 @@ class TitleScene extends Phaser.Scene {
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
         btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
-        btn.on('pointerdown',  () => this.scene.start('GameScene'));
+        btn.on('pointerdown',  () => {
+            this._ensureMusicStarted();
+            this.scene.start('GameScene');
+        });
 
         // Dev
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
@@ -66,7 +80,13 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Teclado também inicia
-        this.input.keyboard.once('keydown', () => this.scene.start('GameScene'));
+        this.input.keyboard.once('keydown', () => {
+            this._ensureMusicStarted();
+            this.scene.start('GameScene');
+        });
+
+        // iOS/Safari: às vezes só destrava áudio em 'pointerdown' do canvas.
+        this.input.once('pointerdown', () => this._ensureMusicStarted());
 
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 600, yoyo: true, repeat: -1 });
     }
