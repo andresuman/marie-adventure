@@ -18,7 +18,9 @@
         html, body {
             background: #000;
             width: 100%;
-            height: 100%;
+            height: 100vh;                  /* fallback genérico */
+            height: -webkit-fill-available; /* iOS Safari < 15.4 */
+            height: 100dvh;                 /* iOS Safari 15.4+ e Chrome 108+ */
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -28,45 +30,60 @@
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            /* Ajuda no mobile: evita scroll/zoom gestual roubando o multi-touch */
             touch-action: none;
+        }
+
+        /* ── Overlay "vire o celular" ── */
+        #portrait-msg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000a22;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            color: #fff;
+            font-family: monospace;
+            text-align: center;
+            padding: 24px;
+        }
+        #portrait-msg .icon {
+            font-size: 56px;
+            animation: spin 1.8s ease-in-out infinite alternate;
+        }
+        #portrait-msg p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #aaddff;
+        }
+        @keyframes spin {
+            from { transform: rotate(-90deg); }
+            to   { transform: rotate(0deg);  }
+        }
+        @media (orientation: portrait) {
+            #portrait-msg { display: flex; }
         }
     </style>
 </head>
 <body>
+    <div id="portrait-msg">
+        <div class="icon">📱</div>
+        <p>Vire o celular para<br><strong>modo paisagem</strong><br>para jogar!</p>
+    </div>
     <script>
-        // visualViewport desconta a barra do navegador (endereços, menu inferior),
-        // dando a área realmente visível — mais preciso que window.innerHeight no mobile.
+        // Notifica o Phaser para recalcular a escala após rotação ou mudança de viewport.
         (function () {
-            function setSize() {
-                var vv = window.visualViewport;
-                var h = vv ? vv.height : window.innerHeight;
-                var w = vv ? vv.width  : window.innerWidth;
-                document.documentElement.style.setProperty('--vh', (h * 0.01) + 'px');
-                document.documentElement.style.setProperty('--vw', (w * 0.01) + 'px');
-                // Avisa o Phaser para recalcular a escala
+            function notifyPhaser() {
                 window.dispatchEvent(new Event('resize'));
             }
-
-            // visualViewport.resize dispara quando a barra do browser aparece/some
             if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', setSize, { passive: true });
+                window.visualViewport.addEventListener('resize', notifyPhaser, { passive: true });
             }
-            window.addEventListener('resize',            setSize, { passive: true });
-            // orientationchange: aguarda 200 ms para o browser terminar de girar
             window.addEventListener('orientationchange', function () {
-                setTimeout(setSize, 200);
+                setTimeout(notifyPhaser, 300);
             }, { passive: true });
-
-            setSize();
-
-            var style = document.createElement('style');
-            style.textContent =
-                'html, body {' +
-                '  height: calc(var(--vh, 1vh) * 100);' +
-                '  width:  calc(var(--vw, 1vw) * 100);' +
-                '}';
-            document.head.appendChild(style);
         })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -75,6 +92,7 @@
     <script src="scenes/GameScene.js?v=20260228"></script>
     <script src="scenes/HUDScene.js?v=20260228"></script>
     <script src="scenes/GameOverScene.js?v=20260228"></script>
+    <script src="scenes/WinScene.js?v=20260228"></script>
     <script src="game.js?v=20260228"></script>
 </body>
 </html>

@@ -23,15 +23,9 @@ class HUDScene extends Phaser.Scene {
             this.heartIcons.push(h);
         }
 
-        // ── Fase / Tempo ──────────────────────────────────────────────────────
-        // Mantém a coluna de tempo à direita ("TEMPO" + número) e coloca o nome
-        // do lugar imediatamente à esquerda para não sobrepor.
-        const placeRightX = W - 48;
-        this.add.text(placeRightX, 4, 'Termas de Lindoia', style).setOrigin(1, 0);
-        this.add.text(placeRightX, 14, 'FASE 1-1', style).setOrigin(1, 0);
-
-        this.add.text(W - 36, 4, 'TEMPO', style).setOrigin(0, 0);
-        this.timeTxt = this.add.text(W - 28, 14, '000', style).setOrigin(0, 0);
+        // ── Tempo regressivo (MM:SS) ──────────────────────────────────────────
+        this.add.text(W - 4, 4, 'TEMPO', style).setOrigin(1, 0);
+        this.timeTxt = this.add.text(W - 4, 14, '02:00', style).setOrigin(1, 0);
 
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
@@ -40,11 +34,16 @@ class HUDScene extends Phaser.Scene {
         this.gameScene.events.on('livesChanged', (v) => {
             this.heartIcons.forEach((h, i) => h.setAlpha(i < v ? 1 : 0.2));
         });
+        this.gameScene.events.on('timeChanged', (v) => {
+            this.timeTxt.setText(this._fmt(v));
+            // Pisca vermelho no último 30 segundos
+            this.timeTxt.setColor(v <= 30 ? '#ff4444' : '#ffffff');
+        });
     }
 
-    update() {
-        if (!this.gameScene) return;
-        const t = this.gameScene.gameTime;
-        this.timeTxt.setText(String(t).padStart(3, '0'));
+    _fmt(secs) {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 }

@@ -7,6 +7,8 @@ const MARIE_SPEED = 140;
 const JUMP_VY     = -440;
 const LIVES_START = 3;
 const CAPY_SPEED  = 60;
+const LEVEL_WIDTH = 1946;   // largura exata do background.png
+const TIME_START  = 120;    // 2 minutos em segundos
 
 class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -14,43 +16,41 @@ class GameScene extends Phaser.Scene {
     init() {
         this.score      = 0;
         this.lives      = LIVES_START;
-        this.gameTime   = 0;
+        this.gameTime   = TIME_START;
         this.dead       = false;
         this.invincible = false;
     }
 
     create() {
-        const W = this.scale.width;
         const H = this.scale.height;
 
-        // ── Fundo (parallax) ────────────────────────────────────────────────
-        this.bg = this.add.tileSprite(0, 0, W, H, 'background')
-            .setOrigin(0, 0).setScrollFactor(0).setDepth(0);
+        // ── Fundo (imagem estática de largura fixa) ──────────────────────────
+        this.add.image(0, 0, 'background').setOrigin(0, 0).setDepth(0);
 
-        // ── Chão ─────────────────────────────────────────────────────────────
+        // ── Chão (gerado de uma vez para toda a fase) ─────────────────────────
         this.ground = this.physics.add.staticGroup();
-        this.groundRight = 0;
-        this.spawnGround(0, W + 400);
+        this.spawnGround(0, LEVEL_WIDTH);
 
         // ── Capivaras ────────────────────────────────────────────────────────
         this.capybaras = this.physics.add.group();
         this.nextCapyX = 380;
 
+        // ── Garrafa (objetivo final) ──────────────────────────────────────────
+        const bottleScale = 0.15;            // 316×718 → ~47×108 px (um pouco maior que Marie)
+        const bottleX     = LEVEL_WIDTH - 80;
+        const bottleY     = GROUND_Y - (718 * bottleScale) / 2 - 2;
+        this.bottle = this.physics.add.staticSprite(bottleX, bottleY, 'bottle')
+            .setScale(bottleScale)
+            .setDepth(10);
+        this.bottle.refreshBody();
+
         // ── Marie Curie ──────────────────────────────────────────────────────
-        // Dimensões reais do sprite idle: 192×302 → escala 0.28 → ~54×85px
         this.marie = this.physics.add.sprite(80, GROUND_Y - 50, 'marie_idle')
             .setScale(MARIE_SCALE)
             .setCollideWorldBounds(false)
-            // Garante que a personagem fique sempre à frente do cenário (ex.: capela)
             .setDepth(10);
 
-        // Body ajustado para o interior do sprite (exclui chapéu e saia)
-        var mW = 192 * MARIE_SCALE * 0.55;
-        var mH = 302 * MARIE_SCALE * 0.80;
-        this.marie.body.setSize(
-            192 * 0.55,
-            302 * 0.80
-        );
+        this.marie.body.setSize(192 * 0.55, 302 * 0.80);
         this.marie.body.setOffset(192 * 0.22, 302 * 0.10);
 
         // ── Colisões ─────────────────────────────────────────────────────────
@@ -58,9 +58,11 @@ class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.capybaras, this.ground);
         this.physics.add.overlap(this.marie, this.capybaras,
             this.onContact, null, this);
+        this.physics.add.overlap(this.marie, this.bottle,
+            this.onReachBottle, null, this);
 
         // ── Câmera ───────────────────────────────────────────────────────────
-        this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, H);
+        this.cameras.main.setBounds(0, 0, LEVEL_WIDTH, H);
         this.cameras.main.startFollow(this.marie, true, 0.1, 0);
 
         // ── Controles ────────────────────────────────────────────────────────
@@ -68,17 +70,18 @@ class GameScene extends Phaser.Scene {
         this.wasd    = this.input.keyboard.addKeys('W,A,S,D');
         this.btnLeft = false; this.btnRight = false; this.btnJump = false;
 
-        // IMPORTANTE (mobile): por padrão o Phaser cria apenas 1 pointer.
-        // Para conseguir segurar "andar" e "pular" ao mesmo tempo no celular,
-        // precisamos habilitar multi-touch adicionando pointers extras.
         this.input.addPointer(2);
-
         this.setupTouchControls();
 
-        // ── Timer ────────────────────────────────────────────────────────────
+        // ── Timer regressivo ─────────────────────────────────────────────────
         this.time.addEvent({
             delay: 1000,
-            callback: () => { if (!this.dead) this.gameTime++; },
+            callback: () => {
+                if (this.dead) return;
+                this.gameTime--;
+                this.events.emit('timeChanged', this.gameTime);
+                if (this.gameTime <= 0) this.triggerGameOver();
+            },
             loop: true
         });
 
@@ -91,9 +94,6 @@ class GameScene extends Phaser.Scene {
         const onGround = this.marie.body.blocked.down;
         const cam      = this.cameras.main.scrollX;
 
-        // Parallax
-        this.bg.tilePositionX = cam * 0.25;
-
         // ── Movimento ────────────────────────────────────────────────────────
         let vx = 0;
         const goLeft  = this.cursors.left.isDown  || this.wasd.A.isDown || this.btnLeft;
@@ -102,7 +102,9 @@ class GameScene extends Phaser.Scene {
         if (goLeft)       { vx = -MARIE_SPEED; this.marie.setFlipX(true);  }
         else if (goRight) { vx =  MARIE_SPEED; this.marie.setFlipX(false); }
 
-        if (this.marie.x < cam + 16) this.marie.x = cam + 16;
+        // Limites horizontais: não sai da fase nem fica atrás da câmera
+        if (this.marie.x < cam + 16)         this.marie.x = cam + 16;
+        if (this.marie.x > LEVEL_WIDTH - 20) this.marie.x = LEVEL_WIDTH - 20;
         this.marie.setVelocityX(vx);
 
         // ── Pulo ──────────────────────────────────────────────────────────────
@@ -114,12 +116,13 @@ class GameScene extends Phaser.Scene {
         if (vx !== 0) this.marie.anims.play('marie-walk', true);
         else          this.marie.anims.play('marie-idle', true);
 
-        // ── Gerar chão e inimigos ────────────────────────────────────────────
-        if (this.groundRight < cam + 900) this.spawnGround(this.groundRight, this.groundRight + 500);
-        if (cam + 550 > this.nextCapyX)   { this.spawnCapybara(this.nextCapyX); this.nextCapyX += Phaser.Math.Between(280, 460); }
+        // ── Gerar capivaras (até a zona da garrafa) ──────────────────────────
+        if (cam + 550 > this.nextCapyX && this.nextCapyX < LEVEL_WIDTH - 300) {
+            this.spawnCapybara(this.nextCapyX);
+            this.nextCapyX += Phaser.Math.Between(280, 460);
+        }
 
-        // ── Limpar objetos fora da tela ───────────────────────────────────────
-        this.ground.getChildren().forEach(t => { if (t.x < cam - 200) t.destroy(); });
+        // ── Limpar capivaras fora da tela ─────────────────────────────────────
         this.capybaras.getChildren().forEach(c => { if (c.x < cam - 200) c.destroy(); });
 
         // ── Caiu no buraco ────────────────────────────────────────────────────
@@ -132,7 +135,6 @@ class GameScene extends Phaser.Scene {
             const tile = this.ground.create(x + TILE_W/2, GROUND_Y + TILE_H/2, 'ground');
             tile.setDisplaySize(TILE_W, TILE_H).refreshBody();
         }
-        this.groundRight = to;
     }
 
     // ── Capivara ──────────────────────────────────────────────────────────────
@@ -142,7 +144,6 @@ class GameScene extends Phaser.Scene {
             .setVelocityX(-CAPY_SPEED)
             .setDepth(10);
 
-        // Body: 276×200 → escala 0.22 → ~61×44px
         capy.body.setSize(276 * 0.72, 200 * 0.68);
         capy.body.setOffset(276 * 0.14, 200 * 0.22);
         capy.anims.play('capy-walk', true);
@@ -156,15 +157,13 @@ class GameScene extends Phaser.Scene {
 
         if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
             // Pisou na capivara!
-            // Guarda a borda inferior visual antes de trocar o sprite (flat é menos alto).
             const visualBottom = capy.y + capy.displayHeight / 2;
             capy.anims.stop();
             capy.setTexture(Phaser.Math.RND.pick(['capy_flat1', 'capy_flat2']));
             capy.setVelocityX(0);
             capy.body.enable = false;
-            // Reposiciona para que a base do sprite flat fique no mesmo lugar que a base
-            // do sprite de caminhada (evita a capivara "flutuar" após ser pisada).
             capy.y = visualBottom - capy.displayHeight / 2;
+
             this.score += 100;
             this.events.emit('scoreChanged', this.score);
             marie.setVelocityY(JUMP_VY * 0.5);
@@ -172,6 +171,18 @@ class GameScene extends Phaser.Scene {
         } else {
             this.loseLife();
         }
+    }
+
+    // ── Chegou na garrafa! ────────────────────────────────────────────────────
+    onReachBottle(marie, bottle) {
+        if (this.dead) return;
+        this.dead = true;
+        bottle.destroy();
+        marie.setVelocityX(0);
+        this.time.delayedCall(600, () => {
+            this.scene.stop('HUDScene');
+            this.scene.start('WinScene', { score: this.score, time: this.gameTime });
+        });
     }
 
     // ── Perder vida ───────────────────────────────────────────────────────────
@@ -220,17 +231,14 @@ class GameScene extends Phaser.Scene {
             }).setOrigin(0.5);
             c.add([bg, txt]);
             c.setSize(sz, sz);
-            // interactive necessário para receber pointer events
             c.setInteractive();
             return c;
         };
 
-        const left  = mkBtn(pad+sz/2,            H-pad-sz/2, '◄');
-        const right = mkBtn(pad+sz*1.5+8,         H-pad-sz/2, '►');
-        const jump  = mkBtn(W-pad-sz/2,            H-pad-sz/2, '▲');
+        const left  = mkBtn(pad+sz/2,        H-pad-sz/2, '◄');
+        const right = mkBtn(pad+sz*1.5+8,    H-pad-sz/2, '►');
+        const jump  = mkBtn(W-pad-sz/2,      H-pad-sz/2, '▲');
 
-        // Multi-touch robusto: cada botão "trava" no pointerId que iniciou o toque.
-        // Assim, um segundo dedo pode apertar outro botão sem soltar o primeiro.
         this._touchBtns = [
             { btn: left,  prop: 'btnLeft',  pointerId: null },
             { btn: right, prop: 'btnRight', pointerId: null },
@@ -248,19 +256,15 @@ class GameScene extends Phaser.Scene {
 
         this._touchBtns.forEach((b) => {
             b.btn.on('pointerdown', (pointer) => {
-                // Se o botão já estiver pressionado por outro dedo, não troca.
                 if (b.pointerId !== null) return;
                 b.pointerId = pointer.id;
                 this[b.prop] = true;
             });
-
-            // Se o dedo sair do botão, considera como "soltou" (controle virtual).
             b.btn.on('pointerout', (pointer) => releasePointer(pointer));
             b.btn.on('pointerup',  (pointer) => releasePointer(pointer));
         });
 
-        // Fallback: se o dedo soltar fora do botão, garante reset do estado.
-        this.input.on('pointerup', (pointer) => releasePointer(pointer));
+        this.input.on('pointerup',     (pointer) => releasePointer(pointer));
         this.input.on('pointercancel', (pointer) => releasePointer(pointer));
     }
 }
