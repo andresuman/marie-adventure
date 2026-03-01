@@ -3,7 +3,7 @@ const GAME_HEIGHT = 270;
 
 // Configurações globais simples do jogo (pode ser alterado via console)
 window.GAME_SETTINGS = window.GAME_SETTINGS || {
-    // Música desligada por padrão (pode ligar depois setando para true)
+    // Música desligada por padrão. O jogador liga pelo botão na tela inicial.
     musicEnabled: false,
 };
 

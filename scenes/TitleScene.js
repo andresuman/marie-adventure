@@ -65,7 +65,7 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Botão jogar
-        const btn = txt(W/2, 185, '▶  JOGAR', {
+        const btn = txt(W/2, 170, '▶  JOGAR', {
             fontSize: '16px',
             color: '#111111',
             stroke: '#000000',
@@ -82,8 +82,54 @@ class TitleScene extends Phaser.Scene {
             this.scene.start('GameScene');
         });
 
+        // Toggle de música (switcher)
+        const musicOn = () => window.GAME_SETTINGS.musicEnabled;
+
+        const swY   = 216;
+        const pillW = 46;
+        const pillH = 24;
+        const pillR = 12;
+        const knobR = 9;
+        const pillX = W / 2 + 20;  // borda esquerda da pílula (afastada do label)
+
+        const swBg    = this.add.graphics();
+        const swKnob  = this.add.graphics();
+        const swLabel = txt(W / 2 - 32, swY, '♪  MÚSICA', {
+            fontSize: '13px',
+            color: '#888888',
+            stroke: '#000000',
+            strokeThickness: 2,
+        });
+
+        const drawSwitch = (on) => {
+            swBg.clear();
+            swBg.fillStyle(on ? 0x339955 : 0x444444, 1);
+            swBg.fillRoundedRect(pillX, swY - pillH / 2, pillW, pillH, pillR);
+
+            swKnob.clear();
+            swKnob.fillStyle(on ? 0xffffff : 0x888888, 1);
+            const kx = on ? pillX + pillW - knobR - 3 : pillX + knobR + 3;
+            swKnob.fillCircle(kx, swY, knobR);
+
+            swLabel.setColor(on ? '#ffffff' : '#888888');
+        };
+        drawSwitch(musicOn());
+
+        // Zona de toque: cobre label + pílula (altura generosa para mobile)
+        this.add.zone(W / 2 + 2, swY, 136, 44)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => {
+                window.GAME_SETTINGS.musicEnabled = !window.GAME_SETTINGS.musicEnabled;
+                drawSwitch(musicOn());
+                if (window.GAME_SETTINGS.musicEnabled) {
+                    this._ensureMusicStarted();
+                } else {
+                    if (window.MusicManager) window.MusicManager.stop();
+                }
+            });
+
         // Crédito
-        txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
+        txt(W/2, 252, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '11px',
             color: '#cccccc',
             stroke: '#000000',
@@ -98,7 +144,6 @@ class TitleScene extends Phaser.Scene {
         });
 
         // iOS/Safari: às vezes só destrava áudio em 'pointerdown' do canvas.
-        // Aqui destravamos apenas o WebAudio (SFX). Música continua desligada por padrão.
         this.input.once('pointerdown', () => this._ensureAudioUnlocked());
 
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 600, yoyo: true, repeat: -1 });
