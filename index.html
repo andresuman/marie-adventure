@@ -33,45 +33,9 @@
             touch-action: none;
         }
 
-        /* ── Overlay "vire o celular" ── */
-        #portrait-msg {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #000a22;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            color: #fff;
-            font-family: monospace;
-            text-align: center;
-            padding: 24px;
-        }
-        #portrait-msg .icon {
-            font-size: 56px;
-            animation: spin 1.8s ease-in-out infinite alternate;
-        }
-        #portrait-msg p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #aaddff;
-        }
-        @keyframes spin {
-            from { transform: rotate(-90deg); }
-            to   { transform: rotate(0deg);  }
-        }
-        @media (orientation: portrait) {
-            #portrait-msg { display: flex; }
-        }
     </style>
 </head>
 <body>
-    <div id="portrait-msg">
-        <div class="icon">📱</div>
-        <p>Vire o celular para<br><strong>modo paisagem</strong><br>para jogar!</p>
-    </div>
     <script>
         // Notifica o Phaser para recalcular a escala após rotação ou mudança de viewport.
         (function () {
@@ -89,6 +53,7 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <!-- cache-bust para garantir refresh quando mexer nos arquivos -->
     <script src="scenes/BootScene.js?v=20260228"></script>
+    <script src="scenes/TitleScene.js?v=20260228"></script>
     <script src="scenes/GameScene.js?v=20260228"></script>
     <script src="scenes/HUDScene.js?v=20260228"></script>
     <script src="scenes/GameOverScene.js?v=20260228"></script>

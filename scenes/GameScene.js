@@ -38,7 +38,7 @@ class GameScene extends Phaser.Scene {
         // ── Garrafa (objetivo final) ──────────────────────────────────────────
         const bottleScale = 0.15;            // 316×718 → ~47×108 px (um pouco maior que Marie)
         const bottleX     = LEVEL_WIDTH - 80;
-        const bottleY     = GROUND_Y - (718 * bottleScale) / 2 - 2;
+        const bottleY     = GROUND_Y - (718 * bottleScale) / 2 + 6;
         this.bottle = this.physics.add.staticSprite(bottleX, bottleY, 'bottle')
             .setScale(bottleScale)
             .setDepth(10);
@@ -91,7 +91,7 @@ class GameScene extends Phaser.Scene {
     update() {
         if (this.dead) return;
 
-        const onGround = this.marie.body.blocked.down;
+        const onGround = this.marie.body.blocked.down || this.marie.body.touching.down;
         const cam      = this.cameras.main.scrollX;
 
         // ── Movimento ────────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ class GameScene extends Phaser.Scene {
         // ── Pulo ──────────────────────────────────────────────────────────────
         const jumpPressed = this.cursors.up.isDown || this.cursors.space.isDown ||
                             this.wasd.W.isDown || this.btnJump;
-        if (jumpPressed && onGround) this.marie.setVelocityY(JUMP_VY);
+        if (jumpPressed && onGround) { this.marie.setVelocityY(JUMP_VY); this.sndJump(); }
 
         // ── Animação ─────────────────────────────────────────────────────────
         if (vx !== 0) this.marie.anims.play('marie-walk', true);
@@ -163,6 +163,7 @@ class GameScene extends Phaser.Scene {
             capy.setVelocityX(0);
             capy.body.enable = false;
             capy.y = visualBottom - capy.displayHeight / 2;
+            this.sndStomp();
 
             this.score += 100;
             this.events.emit('scoreChanged', this.score);
@@ -179,6 +180,7 @@ class GameScene extends Phaser.Scene {
         this.dead = true;
         bottle.destroy();
         marie.setVelocityX(0);
+        this.sndWin();
         this.time.delayedCall(600, () => {
             this.scene.stop('HUDScene');
             this.scene.start('WinScene', { score: this.score, time: this.gameTime });
@@ -188,6 +190,7 @@ class GameScene extends Phaser.Scene {
     // ── Perder vida ───────────────────────────────────────────────────────────
     loseLife() {
         if (this.invincible) return;
+        this.sndHurt();
         this.lives--;
         this.events.emit('livesChanged', this.lives);
 
@@ -212,6 +215,70 @@ class GameScene extends Phaser.Scene {
         this.time.delayedCall(700, () => {
             this.scene.stop('HUDScene');
             this.scene.start('GameOverScene', { score: this.score, time: this.gameTime });
+        });
+    }
+
+    // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
+    _sfx(fn) {
+        try {
+            if (!this._ac) this._ac = new (window.AudioContext || window['webkitAudioContext'])();
+            if (this._ac.state === 'suspended') this._ac.resume();
+            fn(this._ac);
+        } catch (e) {}
+    }
+
+    sndJump() {
+        this._sfx(ac => {
+            const o = ac.createOscillator(), g = ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type = 'square';
+            o.frequency.setValueAtTime(180, ac.currentTime);
+            o.frequency.exponentialRampToValueAtTime(420, ac.currentTime + 0.10);
+            g.gain.setValueAtTime(0.18, ac.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.12);
+            o.start(ac.currentTime); o.stop(ac.currentTime + 0.12);
+        });
+    }
+
+    sndStomp() {
+        this._sfx(ac => {
+            const o = ac.createOscillator(), g = ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type = 'square';
+            o.frequency.setValueAtTime(320, ac.currentTime);
+            o.frequency.exponentialRampToValueAtTime(55, ac.currentTime + 0.14);
+            g.gain.setValueAtTime(0.22, ac.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.15);
+            o.start(ac.currentTime); o.stop(ac.currentTime + 0.15);
+        });
+    }
+
+    sndWin() {
+        this._sfx(ac => {
+            [[523, 0], [659, 0.11], [784, 0.22], [1047, 0.34]].forEach(([f, d]) => {
+                const o = ac.createOscillator(), g = ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type = 'square';
+                o.frequency.value = f;
+                g.gain.setValueAtTime(0.15, ac.currentTime + d);
+                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.18);
+                o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.20);
+            });
+        });
+    }
+
+    sndHurt() {
+        // Som curto de “dano”: descida rápida de frequência + ruído leve
+        this._sfx(ac => {
+            const o = ac.createOscillator(), g = ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type = 'sawtooth';
+            o.frequency.setValueAtTime(220, ac.currentTime);
+            o.frequency.exponentialRampToValueAtTime(70, ac.currentTime + 0.18);
+            g.gain.setValueAtTime(0.18, ac.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.20);
+            o.start(ac.currentTime);
+            o.stop(ac.currentTime + 0.20);
         });
     }
 

@@ -79,10 +79,10 @@ class GameOverScene extends Phaser.Scene {
 
         // Dev
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
-            fontSize: '9px',
-            color: '#888888',
+            fontSize: '11px',
+            color: '#cccccc',
             stroke: '#000000',
-            strokeThickness: 2
+            strokeThickness: 3
         });
 
         this.input.keyboard.once('keydown', () => this.scene.start('GameScene'));

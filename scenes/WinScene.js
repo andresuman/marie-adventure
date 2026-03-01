@@ -25,7 +25,7 @@ class WinScene extends Phaser.Scene {
         });
 
         // Subtítulo
-        txt(W/2, 62, 'Marie Curie tomou sua Água Lindoya!', {
+        txt(W/2, 62, 'Marie Curie tomou sua água Lindoya!', {
             fontSize: '13px',
             color: '#ffe040',
             stroke: '#000000',
@@ -79,10 +79,10 @@ class WinScene extends Phaser.Scene {
 
         // Dev
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
-            fontSize: '9px',
-            color: '#888888',
+            fontSize: '11px',
+            color: '#cccccc',
             stroke: '#000000',
-            strokeThickness: 2
+            strokeThickness: 3
         });
 
         this.input.keyboard.once('keydown', () => this.scene.start('GameScene'));

@@ -13,7 +13,7 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 
 - Pise em cima de uma capivara para eliminá-la (+100 pontos).
 - Encostar lateralmente na capivara custa uma vida.
-- O jogo termina ao perder todas as 5 vidas.
+- O jogo termina ao perder todas as 3 vidas.
 
 ## Rodar localmente
 
@@ -32,6 +32,16 @@ http://localhost:8000
 > **Dica:** se o navegador não refletir uma alteração nos arquivos `.js`, faça *hard refresh*:
 > `Cmd+Shift+R` (macOS) / `Ctrl+F5` (Windows/Linux)
 
+## Requisitos
+
+- Qualquer navegador moderno.
+- Para rodar localmente, você precisa de um servidor HTTP simples (ex.: `python3 -m http.server`).
+
+## Observações
+
+- Por padrão, o jogo usa a CDN do Phaser (`phaser@3.60.0`).
+- Os scripts no `index.html` usam um *cache-bust* via query string (ex.: `?v=20260228`) para facilitar desenvolvimento.
+
 ## Estrutura
 
 ```
@@ -42,7 +52,8 @@ marie-adventure/
 │   ├── BootScene.js    # Carregamento de assets e animações
 │   ├── GameScene.js    # Loop principal do jogo
 │   ├── HUDScene.js     # Pontos, vidas e tempo
-│   └── GameOverScene.js
+│   ├── GameOverScene.js # Tela de fim de jogo
+│   └── WinScene.js      # Tela de vitória
 ├── assets/             # Sprites e cenário (PNG)
 └── docs/               # Referências visuais e spritesheets originais
 ```
