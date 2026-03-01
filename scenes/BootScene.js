@@ -46,15 +46,15 @@ class BootScene extends Phaser.Scene {
 
     // ── Coração para HUD (canvas síncrono) ───────────────────────────────────
     makeHeart() {
-        var tex = this.textures.createCanvas('heart', 14, 12);
-        var ctx = tex.getContext();
-        var rows = [
+        const tex = this.textures.createCanvas('heart', 14, 12);
+        const ctx = tex.getContext();
+        const rows = [
             '.RR.RR.', 'RRRRRRR', 'RRRRRRR',
             '.RRRRR.', '..RRR..', '...R...'
         ];
-        var scale = 2;
-        rows.forEach(function(row, y) {
-            row.split('').forEach(function(ch, x) {
+        const scale = 2;
+        rows.forEach((row, y) => {
+            row.split('').forEach((ch, x) => {
                 if (ch === 'R') { ctx.fillStyle='#e83030'; ctx.fillRect(x*scale,y*scale,scale,scale); }
             });
         });

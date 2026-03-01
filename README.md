@@ -23,7 +23,7 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 ## Áudio
 
 - **SFX** (pulo, pisar na capivara, dano, vitória) ativos por padrão em todos os navegadores.
-- **Música de fundo** existe no código mas está desabilitada por padrão. Para ativar via console do navegador:
+- **Música de fundo** existe no código mas está desabilitada por padrão. Para ativar, abra o console do navegador **antes de clicar em JOGAR** e execute:
   ```js
   window.GAME_SETTINGS.musicEnabled = true;
   ```

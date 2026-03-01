@@ -82,7 +82,7 @@ class TitleScene extends Phaser.Scene {
             this.scene.start('GameScene');
         });
 
-        // Dev
+        // Crédito
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '11px',
             color: '#cccccc',

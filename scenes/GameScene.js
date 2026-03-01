@@ -151,7 +151,7 @@ class GameScene extends Phaser.Scene {
 
     // ── Colisão Marie × Capivara ──────────────────────────────────────────────
     onContact(marie, capy) {
-        if (this.invincible) return;
+        if (this.dead || this.invincible) return;
         const marieFeet = marie.body.bottom;
         const capyTop   = capy.body.top;
 
