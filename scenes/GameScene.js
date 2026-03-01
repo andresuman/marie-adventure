@@ -24,15 +24,8 @@ class GameScene extends Phaser.Scene {
         const H = this.scale.height;
 
         // ── Fundo (parallax) ────────────────────────────────────────────────
-        this.bg = this.add.tileSprite(0, 0, W, H, 'bg')
+        this.bg = this.add.tileSprite(0, 0, W, H, 'background')
             .setOrigin(0, 0).setScrollFactor(0).setDepth(0);
-
-        // ── Chapel no fundo (parallax lento) ────────────────────────────────
-        this.chapel = this.add.image(W * 0.72, H - 68, 'chapel')
-            .setOrigin(0.5, 1)
-            .setScale(0.18)
-            .setScrollFactor(0.06)
-            .setDepth(1);
 
         // ── Chão ─────────────────────────────────────────────────────────────
         this.ground = this.physics.add.staticGroup();

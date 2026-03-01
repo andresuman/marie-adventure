@@ -24,9 +24,11 @@ class BootScene extends Phaser.Scene {
         this.load.image('bottle',  'assets/bottle.png');
         this.load.image('block_q', 'assets/block_q.png');
 
-        // Gera o coração e o fundo via canvas (síncrono)
+        // Fundo pré-gerado como PNG
+        this.load.image('background', 'assets/background.png');
+
+        // Gera o coração via canvas (síncrono)
         this.makeHeart();
-        this.makeBackground();
     }
 
     create() {
