@@ -10,92 +10,88 @@ class GameOverScene extends Phaser.Scene {
         const W = this.scale.width;
         const H = this.scale.height;
 
-        // Fundo escurecido
-        const bg = this.add.rectangle(W/2, H/2, W, H, 0x000000, 0.75);
+        // Overlay escuro azul-marinho
+        this.add.rectangle(W/2, H/2, W, H, 0x001030, 0.88);
+
+        const txt = (x, y, str, style) =>
+            this.add.text(x, y, str, { fontFamily: 'monospace', resolution: 2, ...style })
+                .setOrigin(0.5);
 
         // Título
-        this.add.text(W/2, H/2 - 70, 'FIM DE JOGO', {
-            fontFamily: 'monospace',
-            fontSize: '28px',
-            color: '#ff4444',
-            stroke: '#000',
-            strokeThickness: 5
-        }).setOrigin(0.5);
+        txt(W/2, H/2 - 88, 'FIM DE JOGO', {
+            fontSize: '22px',
+            color: '#ffe040',
+            stroke: '#000000',
+            strokeThickness: 6
+        });
 
-        // Subtítulo temático
-        this.add.text(W/2, H/2 - 38, 'As capivaras venceram dessa vez...', {
-            fontFamily: 'monospace',
-            fontSize: '9px',
-            color: '#ffddaa',
-            stroke: '#000',
+        // Subtítulo
+        txt(W/2, H/2 - 62, 'As capivaras venceram dessa vez...', {
+            fontSize: '10px',
+            color: '#ff8844',
+            stroke: '#000000',
             strokeThickness: 3
-        }).setOrigin(0.5);
+        });
 
         // Pontuação
-        this.add.text(W/2, H/2 - 10, `Pontuação: ${String(this.finalScore).padStart(6,'0')}`, {
-            fontFamily: 'monospace',
+        txt(W/2, H/2 - 36, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
             fontSize: '12px',
             color: '#ffffff',
-            stroke: '#000',
+            stroke: '#000000',
             strokeThickness: 3
-        }).setOrigin(0.5);
+        });
 
-        this.add.text(W/2, H/2 + 10, `Tempo: ${this.finalTime}s`, {
-            fontFamily: 'monospace',
+        txt(W/2, H/2 - 18, `TEMPO       ${String(this.finalTime).padStart(3, '0')} s`, {
             fontSize: '12px',
             color: '#ffffff',
-            stroke: '#000',
+            stroke: '#000000',
             strokeThickness: 3
-        }).setOrigin(0.5);
+        });
 
         // Crédito comemorativo
-        this.add.text(W/2, H/2 + 36, '100 anos da visita de Marie Curie', {
-            fontFamily: 'monospace',
-            fontSize: '8px',
-            color: '#aaddff',
-            stroke: '#000',
+        txt(W/2, H/2 + 8, '100 anos da visita de Marie Curie', {
+            fontSize: '9px',
+            color: '#66ccff',
+            stroke: '#000000',
             strokeThickness: 2
-        }).setOrigin(0.5);
-        this.add.text(W/2, H/2 + 50, 'Águas de Lindóia • 1926 – 2026', {
-            fontFamily: 'monospace',
-            fontSize: '8px',
-            color: '#aaddff',
-            stroke: '#000',
+        });
+        txt(W/2, H/2 + 22, 'Águas de Lindóia  •  1926 – 2026', {
+            fontSize: '9px',
+            color: '#66ccff',
+            stroke: '#000000',
             strokeThickness: 2
-        }).setOrigin(0.5);
+        });
 
         // Botão jogar de novo
-        const btn = this.add.text(W/2, H/2 + 80, '[ JOGAR NOVAMENTE ]', {
-            fontFamily: 'monospace',
-            fontSize: '11px',
-            color: '#ffff00',
-            stroke: '#000',
-            strokeThickness: 3,
-            backgroundColor: '#333300',
-            padding: { x: 10, y: 6 }
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        const btn = txt(W/2, H/2 + 55, '▶  JOGAR NOVAMENTE', {
+            fontSize: '12px',
+            color: '#111111',
+            stroke: '#000000',
+            strokeThickness: 2,
+            backgroundColor: '#ffdd00',
+            padding: { x: 14, y: 7 }
+        }).setInteractive({ useHandCursor: true });
 
-        btn.on('pointerover',  () => btn.setColor('#ffffff'));
-        btn.on('pointerout',   () => btn.setColor('#ffff00'));
+        btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
+        btn.on('pointerout',   () => btn.setBackgroundColor('#ffdd00'));
         btn.on('pointerdown',  () => this.scene.start('GameScene'));
 
         // Créditos
-        this.add.text(W/2, H/2 + 104, 'Desenvolvido por: Andre Suman | @andresuman', {
-            fontFamily: 'monospace',
+        txt(W/2, H/2 + 90, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '8px',
-            color: '#ffffff',
-            stroke: '#000',
+            color: '#888888',
+            stroke: '#000000',
             strokeThickness: 2
-        }).setOrigin(0.5);
+        });
 
-        // Também reinicia com qualquer tecla
+        // Reinicia com qualquer tecla
         this.input.keyboard.once('keydown', () => this.scene.start('GameScene'));
 
-        // Animação piscando no botão
+        // Botão pisca
         this.tweens.add({
             targets: btn,
-            alpha: 0.4,
-            duration: 600,
+            alpha: 0.5,
+            duration: 550,
             yoyo: true,
             repeat: -1
         });

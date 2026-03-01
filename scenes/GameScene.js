@@ -5,7 +5,7 @@ const MARIE_SCALE = 0.28;
 const CAPY_SCALE  = 0.22;
 const MARIE_SPEED = 140;
 const JUMP_VY     = -440;
-const LIVES_START = 5;
+const LIVES_START = 3;
 const CAPY_SPEED  = 60;
 
 class GameScene extends Phaser.Scene {
@@ -140,10 +140,6 @@ class GameScene extends Phaser.Scene {
         const capy = this.capybaras.create(x, GROUND_Y - 30, 'capy_walk1')
             .setScale(CAPY_SCALE)
             .setVelocityX(-CAPY_SPEED)
-            // Os frames de caminhada estão virados para a direita no arquivo,
-            // mas a capivara anda para a esquerda: espelha durante a caminhada.
-            .setFlipX(true)
-            // Inimigos também devem ficar à frente do cenário (ex.: capela)
             .setDepth(10);
 
         // Body: 276×200 → escala 0.22 → ~61×44px
@@ -160,11 +156,15 @@ class GameScene extends Phaser.Scene {
 
         if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
             // Pisou na capivara!
-            capy.anims.play('capy-flat', true);
-            // Os sprites "flat" já estão na orientação correta, então remove o flip.
-            capy.setFlipX(false);
+            // Guarda a borda inferior visual antes de trocar o sprite (flat é menos alto).
+            const visualBottom = capy.y + capy.displayHeight / 2;
+            capy.anims.stop();
+            capy.setTexture(Phaser.Math.RND.pick(['capy_flat1', 'capy_flat2']));
             capy.setVelocityX(0);
             capy.body.enable = false;
+            // Reposiciona para que a base do sprite flat fique no mesmo lugar que a base
+            // do sprite de caminhada (evita a capivara "flutuar" após ser pisada).
+            capy.y = visualBottom - capy.displayHeight / 2;
             this.score += 100;
             this.events.emit('scoreChanged', this.score);
             marie.setVelocityY(JUMP_VY * 0.5);

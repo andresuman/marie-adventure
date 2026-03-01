@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- Evita cache agressivo durante desenvolvimento/local -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -35,20 +35,37 @@
 </head>
 <body>
     <script>
-        // Em mobile, 100vh pode incluir/excluir a barra do navegador dependendo do estado.
-        // Esse ajuste usa a altura real visível e evita o canvas ficar "cortado" no landscape.
+        // visualViewport desconta a barra do navegador (endereços, menu inferior),
+        // dando a área realmente visível — mais preciso que window.innerHeight no mobile.
         (function () {
-            function setVh() {
-                const vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            function setSize() {
+                var vv = window.visualViewport;
+                var h = vv ? vv.height : window.innerHeight;
+                var w = vv ? vv.width  : window.innerWidth;
+                document.documentElement.style.setProperty('--vh', (h * 0.01) + 'px');
+                document.documentElement.style.setProperty('--vw', (w * 0.01) + 'px');
+                // Avisa o Phaser para recalcular a escala
+                window.dispatchEvent(new Event('resize'));
             }
-            window.addEventListener('resize', setVh, { passive: true });
-            window.addEventListener('orientationchange', setVh, { passive: true });
-            setVh();
 
-            // Aplica a variável no body/html (sem depender de CSS moderno como 100dvh).
-            const style = document.createElement('style');
-            style.textContent = `html, body { height: calc(var(--vh, 1vh) * 100); }`;
+            // visualViewport.resize dispara quando a barra do browser aparece/some
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', setSize, { passive: true });
+            }
+            window.addEventListener('resize',            setSize, { passive: true });
+            // orientationchange: aguarda 200 ms para o browser terminar de girar
+            window.addEventListener('orientationchange', function () {
+                setTimeout(setSize, 200);
+            }, { passive: true });
+
+            setSize();
+
+            var style = document.createElement('style');
+            style.textContent =
+                'html, body {' +
+                '  height: calc(var(--vh, 1vh) * 100);' +
+                '  width:  calc(var(--vw, 1vw) * 100);' +
+                '}';
             document.head.appendChild(style);
         })();
     </script>
