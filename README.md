@@ -71,6 +71,11 @@ marie-adventure/
 └── docs/                   # Referências visuais e spritesheets originais
 ```
 
+## Licença
+
+[MIT](LICENSE) — Andre Suman Pereira, 2026.
+Contribuições são bem-vindas via pull request.
+
 ## Créditos
 
 - Engine: [Phaser 3](https://phaser.io/) v3.60
