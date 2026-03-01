@@ -25,7 +25,7 @@ class HUDScene extends Phaser.Scene {
 
         // ── Tempo regressivo (MM:SS) ──────────────────────────────────────────
         this.add.text(W - 4, 4, 'TEMPO', style).setOrigin(1, 0);
-        this.timeTxt = this.add.text(W - 4, 14, '02:00', style).setOrigin(1, 0);
+        this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
@@ -36,8 +36,8 @@ class HUDScene extends Phaser.Scene {
         });
         this.gameScene.events.on('timeChanged', (v) => {
             this.timeTxt.setText(this._fmt(v));
-            // Pisca vermelho no último 30 segundos
-            this.timeTxt.setColor(v <= 30 ? '#ff4444' : '#ffffff');
+            // Pisca vermelho no último 20 segundos
+            this.timeTxt.setColor(v <= 20 ? '#ff4444' : '#ffffff');
         });
     }
 

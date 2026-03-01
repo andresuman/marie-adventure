@@ -100,7 +100,7 @@
             const now = this._ac ? this._ac.currentTime : 0;
             this._scheduled.forEach(n => {
                 try {
-                    if (n.stop) n.stop(Math.max(now, n._stopAt || now));
+                    if (n.stop) n.stop(now);
                 } catch (e) {}
             });
             this._scheduled = [];
@@ -110,6 +110,10 @@
             if (!this._playingKey) return;
             const song = this._songs.get(this._playingKey);
             const ac = this.ensureAudioContext();
+
+            // Clean up already-finished oscillators to prevent unbounded memory growth
+            const now = ac.currentTime;
+            this._scheduled = this._scheduled.filter(o => (o._stopAt || 0) > now);
 
             const secondsPerBeat = 60 / (song.bpm || 100);
             const totalBeats = song.totalBeats;

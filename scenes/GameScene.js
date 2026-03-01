@@ -8,7 +8,7 @@ const JUMP_VY     = -440;
 const LIVES_START = 3;
 const CAPY_SPEED  = 60;
 const LEVEL_WIDTH = 1946;   // largura exata do background.png
-const TIME_START  = 120;    // 2 minutos em segundos
+const TIME_START  = 60;     // 1 minuto em segundos
 
 class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
