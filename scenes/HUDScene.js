@@ -28,8 +28,9 @@ class HUDScene extends Phaser.Scene {
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
         // ── Multiplicador de combo ────────────────────────────────────────────
+        // Cor inicial cinza: ×1 significa "sem combo ativo"; fica amarelo quando combo > 1.
         this.comboTxt = this.add.text(W / 2, 21, '×1', {
-            fontFamily: 'monospace', fontSize: '10px', color: '#ffdd00',
+            fontFamily: 'monospace', fontSize: '10px', color: '#888888',
             stroke: '#000000', strokeThickness: 3,
         }).setOrigin(0.5, 0);
 

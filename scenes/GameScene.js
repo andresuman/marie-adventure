@@ -247,11 +247,11 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
-    // ── Som de passagem limpa (square, escala de Fá maior, evolui com o combo) ─
+    // ── Som de passagem limpa (square, campo de Fá maior, evolui com o combo) ──
     sndCleanPass(combo) {
         this._sfx(ac => {
-            // Graus da escala de Fá maior — sobe um grau a cada passagem limpa.
-            // Mesmo timbre square dos outros SFX; harmônico com a trilha em Fá maior.
+            // Notas do campo harmônico de Fá maior (hexacorde de Dó a Lá) — sobe um grau a cada passagem limpa.
+            // Mesmo timbre square dos outros SFX; harmonicamente compatível com a trilha em Fá maior.
             const notes = [523, 587, 659, 698, 784, 880]; // C5 D5 E5 F5 G5 A5
             const base  = notes[Math.min(combo - 1, notes.length - 1)];
             const now   = ac.currentTime;

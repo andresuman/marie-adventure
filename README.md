@@ -23,8 +23,8 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 
 ## Áudio
 
-- **SFX** (pulo, passar sobre capivara, dano, vitória) ativos por padrão em todos os navegadores.
-- **Música de fundo** — valsa original em Fá maior, estilo salão anos 1920. Desligada por padrão; ative pelo botão **♪ MÚSICA** na tela inicial antes de jogar.
+- **SFX** (pulo, passagem limpa, pisar em capivara, dano, vitória) ativos por padrão em todos os navegadores.
+- **Música de fundo** — desligada por padrão; ative pelo botão **MÚSICA** na tela inicial antes de jogar.
 
 ## Rodar localmente
 
@@ -64,7 +64,7 @@ marie-adventure/
 ├── audio/
 │   ├── AudioUnlock.js      # Desbloqueio da Web Audio API no mobile
 │   ├── MusicManager.js     # Motor de música chiptune (WebAudio puro)
-│   └── GameTheme.js        # Melodia da fase (valsa original em Fá maior, estilo anos 1920)
+│   └── GameTheme.js        # Melodia da fase
 ├── assets/                 # Sprites e cenário (PNG)
 └── docs/                   # Referências visuais e spritesheets originais
 ```
