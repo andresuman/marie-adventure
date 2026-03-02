@@ -23,7 +23,7 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 6
         });
 
-        txt(W/2, 62, 'As capivaras venceram dessa vez...', {
+        txt(W/2, 62, 'As capivaras atravessaram seu caminho...', {
             fontSize: '13px',
             color: '#ff8844',
             stroke: '#000000',

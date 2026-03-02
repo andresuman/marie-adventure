@@ -50,16 +50,16 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Objetivo
-        txt(W/2, 90, 'Ajude Marie Curie a chegar até a garrafa de', {
+        txt(W/2, 90, 'Chegue à garrafa desviando das capivaras.', {
             fontSize: '12px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 3
         });
 
-        txt(W/2, 108, 'água Lindoya antes que o tempo acabe.', {
+        txt(W/2, 108, 'Passagens limpas valem mais pontos!', {
             fontSize: '12px',
-            color: '#ffffff',
+            color: '#ffe040',
             stroke: '#000000',
             strokeThickness: 3
         });

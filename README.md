@@ -16,13 +16,14 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 | Pular | ↑ ou W ou Espaço | ▲ |
 
 - **Objetivo:** chegue até a garrafa de água Lindoya no fim da fase.
-- Pule em cima de uma capivara para eliminá-la (+100 pontos).
-- Encostar lateralmente na capivara custa uma vida.
+- Desvie das capivaras pulando por cima — cada passagem limpa vale **+100 × multiplicador** de combo.
+- Pisar em uma capivara perde os pontos acumulados no combo atual e zera o multiplicador.
+- Encostar de lado em uma capivara custa uma vida e zera o multiplicador.
 - O jogo termina ao perder todas as 3 vidas ou ao esgotar o tempo.
 
 ## Áudio
 
-- **SFX** (pulo, pular em cima da capivara, dano, vitória) ativos por padrão em todos os navegadores.
+- **SFX** (pulo, passar sobre capivara, dano, vitória) ativos por padrão em todos os navegadores.
 - **Música de fundo** — valsa original em Fá maior, estilo salão anos 1920. Desligada por padrão; ative pelo botão **♪ MÚSICA** na tela inicial antes de jogar.
 
 ## Rodar localmente

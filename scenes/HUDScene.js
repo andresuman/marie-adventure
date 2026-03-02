@@ -28,7 +28,7 @@ class HUDScene extends Phaser.Scene {
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
         // ── Multiplicador de combo ────────────────────────────────────────────
-        this.comboTxt = this.add.text(W / 2, 4, '×1', {
+        this.comboTxt = this.add.text(W / 2, 21, '×1', {
             fontFamily: 'monospace', fontSize: '10px', color: '#ffdd00',
             stroke: '#000000', strokeThickness: 3,
         }).setOrigin(0.5, 0);
