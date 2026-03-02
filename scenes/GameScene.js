@@ -14,11 +14,13 @@ class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
 
     init() {
-        this.score      = 0;
-        this.lives      = LIVES_START;
-        this.gameTime   = TIME_START;
-        this.dead       = false;
-        this.invincible = false;
+        this.score       = 0;
+        this.lives       = LIVES_START;
+        this.gameTime    = TIME_START;
+        this.dead        = false;
+        this.invincible  = false;
+        this.combo       = 1;   // multiplicador de passagem limpa
+        this.comboPoints = 0;   // pontos acumulados na sequência atual (devolvidos se pisar)
     }
 
     create() {
@@ -122,8 +124,21 @@ class GameScene extends Phaser.Scene {
             this.nextCapyX += Phaser.Math.Between(280, 460);
         }
 
-        // ── Limpar capivaras fora da tela ─────────────────────────────────────
-        this.capybaras.getChildren().forEach(c => { if (c.x < cam - 200) c.destroy(); });
+        // ── Detectar passagem limpa + limpar capivaras fora da tela ──────────
+        this.capybaras.getChildren().forEach(capy => {
+            // Passagem limpa: capivara cruzou a posição de Marie sem ser pisada
+            if (!capy._scored && !capy._stomped && capy.x < this.marie.x - 40) {
+                capy._scored = true;
+                const pts = 100 * this.combo;
+                this.score      += pts;
+                this.comboPoints += pts;
+                this.combo++;
+                this.events.emit('scoreChanged', this.score);
+                this.events.emit('comboChanged',  this.combo);
+                this._floatText(`+${pts}`, this.marie.x, this.marie.y - 40, '#44ff88');
+            }
+            if (capy.x < cam - 200) capy.destroy();
+        });
 
         // ── Caiu no buraco ────────────────────────────────────────────────────
         if (this.marie.y > this.scale.height + 60) this.loseLife();
@@ -157,7 +172,8 @@ class GameScene extends Phaser.Scene {
         const capyTop   = capy.body.top;
 
         if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
-            // Pulou em cima da capivara!
+            // Pisou na capivara — penalidade: perde os pontos do combo atual
+            capy._stomped = true;
             const visualBottom = capy.y + capy.displayHeight / 2;
             capy.anims.stop();
             capy.setTexture(Phaser.Math.RND.pick(['capy_flat1', 'capy_flat2']));
@@ -166,8 +182,14 @@ class GameScene extends Phaser.Scene {
             capy.y = visualBottom - capy.displayHeight / 2;
             this.sndStomp();
 
-            this.score += 100;
+            if (this.comboPoints > 0) {
+                this.score = Math.max(0, this.score - this.comboPoints);
+                this._floatText(`-${this.comboPoints}`, marie.x, marie.y - 40, '#ff4444');
+            }
+            this.combo       = 1;
+            this.comboPoints = 0;
             this.events.emit('scoreChanged', this.score);
+            this.events.emit('comboChanged',  this.combo);
             marie.setVelocityY(JUMP_VY * 0.5);
             this.time.delayedCall(500, () => capy.destroy());
         } else {
@@ -194,6 +216,10 @@ class GameScene extends Phaser.Scene {
         this.sndHurt();
         this.lives--;
         this.events.emit('livesChanged', this.lives);
+        // Encostou de lado: zera o combo mas não perde pontos já ganhos
+        this.combo       = 1;
+        this.comboPoints = 0;
+        this.events.emit('comboChanged', this.combo);
 
         if (this.lives <= 0) { this.triggerGameOver(); return; }
 
@@ -220,6 +246,18 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
+    // ── Texto flutuante de pontuação ──────────────────────────────────────────
+    _floatText(text, x, y, color) {
+        const t = this.add.text(x, y, text, {
+            fontFamily: 'monospace', fontSize: '12px',
+            color, stroke: '#000000', strokeThickness: 3,
+        }).setOrigin(0.5).setDepth(20);
+        this.tweens.add({
+            targets: t, y: y - 36, alpha: 0, duration: 900,
+            onComplete: () => t.destroy(),
+        });
+    }
+
     _sfx(fn) {
         try {
             // Reutiliza o contexto SFX já desbloqueado pelo AudioUnlock.js (evita contextos duplicados)

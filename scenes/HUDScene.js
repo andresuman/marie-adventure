@@ -27,6 +27,12 @@ class HUDScene extends Phaser.Scene {
         this.add.text(W - 4, 4, 'TEMPO', style).setOrigin(1, 0);
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
+        // ── Multiplicador de combo ────────────────────────────────────────────
+        this.comboTxt = this.add.text(W / 2, 4, '×1', {
+            fontFamily: 'monospace', fontSize: '10px', color: '#ffdd00',
+            stroke: '#000000', strokeThickness: 3,
+        }).setOrigin(0.5, 0);
+
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
             this.scoreTxt.setText(String(v).padStart(6, '0'));
@@ -38,6 +44,11 @@ class HUDScene extends Phaser.Scene {
             this.timeTxt.setText(this._fmt(v));
             // Pisca vermelho no último 20 segundos
             this.timeTxt.setColor(v <= 20 ? '#ff4444' : '#ffffff');
+        });
+        this.gameScene.events.on('comboChanged', (v) => {
+            this.comboTxt.setText(`×${v}`);
+            // Destaque visual quando o multiplicador sobe
+            this.comboTxt.setColor(v > 1 ? '#ffdd00' : '#888888');
         });
     }
 
