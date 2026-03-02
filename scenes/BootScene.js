@@ -7,7 +7,7 @@ class BootScene extends Phaser.Scene {
         this.load.image('marie_walk1', 'assets/marie_walk1.png');
         this.load.image('marie_walk2', 'assets/marie_walk2.png');
         this.load.image('marie_walk3', 'assets/marie_walk3.png');
-        this.load.image('marie_run',   'assets/marie_run.png');
+        this.load.image('marie_walk4', 'assets/marie_walk4.png');
 
         // Inimigos
         this.load.image('capy_walk1', 'assets/capy_walk1.png');
@@ -32,7 +32,7 @@ class BootScene extends Phaser.Scene {
         this.anims.create({ key: 'marie-walk',
             frames: [
                 { key:'marie_walk1' }, { key:'marie_walk2' },
-                { key:'marie_walk3' }, { key:'marie_run'   }
+                { key:'marie_walk3' }, { key:'marie_walk4'  }
             ], frameRate:8, repeat:-1 });
 
         // Animações da capivara
