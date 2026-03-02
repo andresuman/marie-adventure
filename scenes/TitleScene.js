@@ -85,9 +85,9 @@ class TitleScene extends Phaser.Scene {
         // Botão de música: ícone desenhado (caixinha + ondas / X) + label
         const musicOn = () => window.GAME_SETTINGS.musicEnabled;
         const swY = 216;
-        const ix  = W / 2 - 40; // aresta esquerda do ícone
+        const ix  = W / 2 - 47; // aresta esquerda do ícone
 
-        const swLabel = txt(W / 2 + 14, swY, 'MÚSICA', {
+        const swLabel = txt(W / 2 + 20, swY, 'MÚSICA', {
             fontSize: '14px', color: '#ffffff',
             stroke: '#000000', strokeThickness: 3,
         });
@@ -97,38 +97,60 @@ class TitleScene extends Phaser.Scene {
             swIcon.clear();
             const hex = on ? 0xffffff : 0x888888;
 
+            const hornPts = [
+                { x: ix + 6,  y: swY - 5 },
+                { x: ix + 16, y: swY - 8 },
+                { x: ix + 16, y: swY + 8 },
+                { x: ix + 6,  y: swY + 5 },
+            ];
+
+            // Formas sólidas (preenchimento)
             swIcon.fillStyle(hex, 1);
+            swIcon.fillRect(ix, swY - 5, 6, 10);
+            swIcon.fillPoints(hornPts, true);
 
-            // Caixinha (retângulo mais quadrado — não estreito)
-            swIcon.fillRect(ix, swY - 4, 5, 8);
+            // Contorno preto (harmônico com o strokeThickness dos textos)
+            swIcon.lineStyle(2, 0x000000, 1);
+            swIcon.strokeRect(ix, swY - 5, 6, 10);
+            swIcon.strokePoints(hornPts, true);
 
-            // Corneta: TRAPÉZIO (ponta achatada, não triangular)
-            // borda esquerda 8px de altura → borda direita 12px de altura
-            swIcon.fillPoints([
-                { x: ix + 5,  y: swY - 4 },
-                { x: ix + 12, y: swY - 6 },
-                { x: ix + 12, y: swY + 6 },
-                { x: ix + 5,  y: swY + 4 },
-            ], true);
-
-            swIcon.lineStyle(2, hex, 1);
             if (on) {
-                // Dois arcos de onda sonora
+                // Ondas sonoras: preto por baixo (mais espesso), cor por cima
+                swIcon.lineStyle(4, 0x000000, 1);
                 swIcon.beginPath();
-                swIcon.arc(ix + 12, swY, 4, -Math.PI * 0.42, Math.PI * 0.42, false);
+                swIcon.arc(ix + 16, swY, 5, -Math.PI * 0.4, Math.PI * 0.4, false);
                 swIcon.strokePath();
                 swIcon.beginPath();
-                swIcon.arc(ix + 12, swY, 8, -Math.PI * 0.42, Math.PI * 0.42, false);
+                swIcon.arc(ix + 16, swY, 10, -Math.PI * 0.4, Math.PI * 0.4, false);
+                swIcon.strokePath();
+
+                swIcon.lineStyle(2, hex, 1);
+                swIcon.beginPath();
+                swIcon.arc(ix + 16, swY, 5, -Math.PI * 0.4, Math.PI * 0.4, false);
+                swIcon.strokePath();
+                swIcon.beginPath();
+                swIcon.arc(ix + 16, swY, 10, -Math.PI * 0.4, Math.PI * 0.4, false);
                 swIcon.strokePath();
             } else {
-                // X de mudo (limpo, próximo à corneta)
+                // X de mudo: preto por baixo, cor por cima
+                swIcon.lineStyle(4, 0x000000, 1);
                 swIcon.beginPath();
-                swIcon.moveTo(ix + 15, swY - 4);
-                swIcon.lineTo(ix + 21, swY + 4);
+                swIcon.moveTo(ix + 19, swY - 5);
+                swIcon.lineTo(ix + 26, swY + 5);
                 swIcon.strokePath();
                 swIcon.beginPath();
-                swIcon.moveTo(ix + 21, swY - 4);
-                swIcon.lineTo(ix + 15, swY + 4);
+                swIcon.moveTo(ix + 26, swY - 5);
+                swIcon.lineTo(ix + 19, swY + 5);
+                swIcon.strokePath();
+
+                swIcon.lineStyle(2, hex, 1);
+                swIcon.beginPath();
+                swIcon.moveTo(ix + 19, swY - 5);
+                swIcon.lineTo(ix + 26, swY + 5);
+                swIcon.strokePath();
+                swIcon.beginPath();
+                swIcon.moveTo(ix + 26, swY - 5);
+                swIcon.lineTo(ix + 19, swY + 5);
                 swIcon.strokePath();
             }
 
