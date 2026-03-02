@@ -82,45 +82,66 @@ class TitleScene extends Phaser.Scene {
             this.scene.start('GameScene');
         });
 
-        // Toggle de música (switcher)
+        // Botão de música: ícone desenhado (caixinha + ondas / X) + label
         const musicOn = () => window.GAME_SETTINGS.musicEnabled;
+        const swY = 216;
+        const ix  = W / 2 - 40; // aresta esquerda do ícone
 
-        const swY   = 216;
-        const pillW = 46;
-        const pillH = 24;
-        const pillR = 12;
-        const knobR = 9;
-        const pillX = W / 2 + 20;  // borda esquerda da pílula (afastada do label)
-
-        const swBg    = this.add.graphics();
-        const swKnob  = this.add.graphics();
-        const swLabel = txt(W / 2 - 32, swY, '♪  MÚSICA', {
-            fontSize: '13px',
-            color: '#888888',
-            stroke: '#000000',
-            strokeThickness: 2,
+        const swLabel = txt(W / 2 + 14, swY, 'MÚSICA', {
+            fontSize: '14px', color: '#ffffff',
+            stroke: '#000000', strokeThickness: 3,
         });
+        const swIcon = this.add.graphics();
 
-        const drawSwitch = (on) => {
-            swBg.clear();
-            swBg.fillStyle(on ? 0x339955 : 0x444444, 1);
-            swBg.fillRoundedRect(pillX, swY - pillH / 2, pillW, pillH, pillR);
+        const drawMusicBtn = (on) => {
+            swIcon.clear();
+            const hex = on ? 0xffffff : 0x888888;
 
-            swKnob.clear();
-            swKnob.fillStyle(on ? 0xffffff : 0x888888, 1);
-            const kx = on ? pillX + pillW - knobR - 3 : pillX + knobR + 3;
-            swKnob.fillCircle(kx, swY, knobR);
+            swIcon.fillStyle(hex, 1);
+
+            // Caixinha (retângulo mais quadrado — não estreito)
+            swIcon.fillRect(ix, swY - 4, 5, 8);
+
+            // Corneta: TRAPÉZIO (ponta achatada, não triangular)
+            // borda esquerda 8px de altura → borda direita 12px de altura
+            swIcon.fillPoints([
+                { x: ix + 5,  y: swY - 4 },
+                { x: ix + 12, y: swY - 6 },
+                { x: ix + 12, y: swY + 6 },
+                { x: ix + 5,  y: swY + 4 },
+            ], true);
+
+            swIcon.lineStyle(2, hex, 1);
+            if (on) {
+                // Dois arcos de onda sonora
+                swIcon.beginPath();
+                swIcon.arc(ix + 12, swY, 4, -Math.PI * 0.42, Math.PI * 0.42, false);
+                swIcon.strokePath();
+                swIcon.beginPath();
+                swIcon.arc(ix + 12, swY, 8, -Math.PI * 0.42, Math.PI * 0.42, false);
+                swIcon.strokePath();
+            } else {
+                // X de mudo (limpo, próximo à corneta)
+                swIcon.beginPath();
+                swIcon.moveTo(ix + 15, swY - 4);
+                swIcon.lineTo(ix + 21, swY + 4);
+                swIcon.strokePath();
+                swIcon.beginPath();
+                swIcon.moveTo(ix + 21, swY - 4);
+                swIcon.lineTo(ix + 15, swY + 4);
+                swIcon.strokePath();
+            }
 
             swLabel.setColor(on ? '#ffffff' : '#888888');
         };
-        drawSwitch(musicOn());
+        drawMusicBtn(musicOn());
 
-        // Zona de toque: cobre label + pílula (altura generosa para mobile)
-        this.add.zone(W / 2 + 2, swY, 136, 44)
+        // Zona interativa generosa para mobile
+        this.add.zone(W / 2 - 10, swY, 140, 36)
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => {
                 window.GAME_SETTINGS.musicEnabled = !window.GAME_SETTINGS.musicEnabled;
-                drawSwitch(musicOn());
+                drawMusicBtn(musicOn());
                 if (window.GAME_SETTINGS.musicEnabled) {
                     this._ensureMusicStarted();
                 } else {

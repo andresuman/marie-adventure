@@ -247,29 +247,30 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
-    // ── Som de passagem limpa (escala pentatônica, evolui com o combo) ────────
+    // ── Som de passagem limpa (square, escala de Fá maior, evolui com o combo) ─
     sndCleanPass(combo) {
         this._sfx(ac => {
-            // Escala pentatônica de Dó — cada grau do combo sobe um tom
-            const scale = [523, 587, 659, 784, 880, 1047]; // C5 D5 E5 G5 A5 C6
-            const freq  = scale[Math.min(combo - 1, scale.length - 1)];
+            // Graus da escala de Fá maior — sobe um grau a cada passagem limpa.
+            // Mesmo timbre square dos outros SFX; harmônico com a trilha em Fá maior.
+            const notes = [523, 587, 659, 698, 784, 880]; // C5 D5 E5 F5 G5 A5
+            const base  = notes[Math.min(combo - 1, notes.length - 1)];
             const now   = ac.currentTime;
 
-            const note = (f, delay, amp, dur) => {
-                const o = ac.createOscillator();
-                const g = ac.createGain();
+            // "Ping" curto: nota + leve slide de um semitom para cima (brilho retro)
+            const ping = (freq, t, amp) => {
+                const o = ac.createOscillator(), g = ac.createGain();
                 o.connect(g); g.connect(ac.destination);
-                o.type = 'sine';
-                o.frequency.value = f;
-                g.gain.setValueAtTime(0, now + delay);
-                g.gain.linearRampToValueAtTime(amp, now + delay + 0.01);
-                g.gain.exponentialRampToValueAtTime(0.001, now + delay + dur);
-                o.start(now + delay); o.stop(now + delay + dur + 0.01);
+                o.type = 'square';
+                o.frequency.setValueAtTime(freq, now + t);
+                o.frequency.exponentialRampToValueAtTime(freq * 1.06, now + t + 0.07);
+                g.gain.setValueAtTime(amp, now + t);
+                g.gain.exponentialRampToValueAtTime(0.001, now + t + 0.10);
+                o.start(now + t); o.stop(now + t + 0.10);
             };
 
-            note(freq,       0,    0.20, 0.18); // nota principal
-            if (combo >= 3) note(freq * 1.5, 0.05, 0.10, 0.14); // quinta justa
-            if (combo >= 5) note(freq * 2,   0.09, 0.06, 0.11); // oitava acima
+            ping(base,       0,    0.14); // nota principal (sempre)
+            if (combo >= 3) ping(base * 1.5, 0.08, 0.10); // quinta justa — combo médio
+            if (combo >= 5) ping(base * 2,   0.15, 0.07); // oitava acima — combo alto
         });
     }
 
