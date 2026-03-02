@@ -130,6 +130,7 @@ class GameScene extends Phaser.Scene {
             if (!capy._scored && !capy._stomped && capy.x < this.marie.x - 40) {
                 capy._scored = true;
                 const pts = 100 * this.combo;
+                this.sndCleanPass(this.combo);  // som antes de incrementar: reflete o nível atingido
                 this.score      += pts;
                 this.comboPoints += pts;
                 this.combo++;
@@ -246,6 +247,32 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Sons (Web Audio API — sem arquivos externos) ──────────────────────────
+    // ── Som de passagem limpa (escala pentatônica, evolui com o combo) ────────
+    sndCleanPass(combo) {
+        this._sfx(ac => {
+            // Escala pentatônica de Dó — cada grau do combo sobe um tom
+            const scale = [523, 587, 659, 784, 880, 1047]; // C5 D5 E5 G5 A5 C6
+            const freq  = scale[Math.min(combo - 1, scale.length - 1)];
+            const now   = ac.currentTime;
+
+            const note = (f, delay, amp, dur) => {
+                const o = ac.createOscillator();
+                const g = ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type = 'sine';
+                o.frequency.value = f;
+                g.gain.setValueAtTime(0, now + delay);
+                g.gain.linearRampToValueAtTime(amp, now + delay + 0.01);
+                g.gain.exponentialRampToValueAtTime(0.001, now + delay + dur);
+                o.start(now + delay); o.stop(now + delay + dur + 0.01);
+            };
+
+            note(freq,       0,    0.20, 0.18); // nota principal
+            if (combo >= 3) note(freq * 1.5, 0.05, 0.10, 0.14); // quinta justa
+            if (combo >= 5) note(freq * 2,   0.09, 0.06, 0.11); // oitava acima
+        });
+    }
+
     // ── Texto flutuante de pontuação ──────────────────────────────────────────
     _floatText(text, x, y, color) {
         const t = this.add.text(x, y, text, {
