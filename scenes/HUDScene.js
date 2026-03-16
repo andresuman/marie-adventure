@@ -3,6 +3,7 @@ class HUDScene extends Phaser.Scene {
 
     init(data) {
         this.gameScene = data.gameScene;
+        this.level     = data.level || 1;
     }
 
     create() {
@@ -11,11 +12,16 @@ class HUDScene extends Phaser.Scene {
         const style = { fontFamily: 'monospace', fontSize: '10px', color: '#ffffff',
                         stroke: '#000000', strokeThickness: 3 };
 
-        // ── Score ─────────────────────────────────────────────────────────────
+        // ── Score + estrela de acertos (coluna esquerda) ─────────────────────
         this.add.text(8, 4, 'PONTOS', style);
         this.scoreTxt = this.add.text(8, 14, '000000', style);
+        // ★N fica logo abaixo da pontuação, mesma coluna
+        this.comboTxt = this.add.text(8, 24, '★0', {
+            fontFamily: 'monospace', fontSize: '11px', color: '#888888',
+            stroke: '#000000', strokeThickness: 3,
+        }).setOrigin(0, 0);
 
-        // ── Vidas (corações) ──────────────────────────────────────────────────
+        // ── Vidas (corações) — centro da tela ────────────────────────────────
         this.heartIcons = [];
         for (let i = 0; i < LIVES_START; i++) {
             const h = this.add.image(W/2 - (LIVES_START * 16)/2 + i * 16 + 8, 8, 'heart')
@@ -27,29 +33,42 @@ class HUDScene extends Phaser.Scene {
         this.add.text(W - 4, 4, 'TEMPO', style).setOrigin(1, 0);
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
-        // ── Multiplicador de combo ────────────────────────────────────────────
-        // Cor inicial cinza: ×1 significa "sem combo ativo"; fica amarelo quando combo > 1.
-        this.comboTxt = this.add.text(W / 2, 21, '×1', {
-            fontFamily: 'monospace', fontSize: '10px', color: '#888888',
-            stroke: '#000000', strokeThickness: 3,
-        }).setOrigin(0.5, 0);
-
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
             this.scoreTxt.setText(String(v).padStart(6, '0'));
         });
+
         this.gameScene.events.on('livesChanged', (v) => {
             this.heartIcons.forEach((h, i) => h.setAlpha(i < v ? 1 : 0.2));
         });
+
         this.gameScene.events.on('timeChanged', (v) => {
             this.timeTxt.setText(this._fmt(v));
-            // Pisca vermelho no último 20 segundos
             this.timeTxt.setColor(v <= 20 ? '#ff4444' : '#ffffff');
         });
+
         this.gameScene.events.on('comboChanged', (v) => {
-            this.comboTxt.setText(`×${v}`);
-            // Destaque visual quando o multiplicador sobe
-            this.comboTxt.setColor(v > 1 ? '#ffdd00' : '#888888');
+            // Mostra quantos acertos seguidos (combo 1 = zero acertos encadeados)
+            const seguidos = v - 1;
+            this.comboTxt.setText(`★${seguidos}`);
+
+            // Cor progressiva: cinza → amarelo → laranja → vermelho
+            const color = seguidos === 0 ? '#888888'
+                        : seguidos <= 2  ? '#ffdd00'
+                        : seguidos <= 5  ? '#ff9900'
+                        :                  '#ff4444';
+            this.comboTxt.setColor(color);
+
+            // Pulso a cada acerto encadeado
+            if (seguidos > 0) {
+                this.tweens.killTweensOf(this.comboTxt);
+                this.tweens.add({
+                    targets: this.comboTxt,
+                    scaleX: 1.6, scaleY: 1.6,
+                    duration: 120, yoyo: true,
+                    onComplete: () => this.comboTxt.setScale(1),
+                });
+            }
         });
     }
 

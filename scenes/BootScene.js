@@ -19,7 +19,8 @@ class BootScene extends Phaser.Scene {
         // Cenário e itens
         this.load.image('ground',  'assets/ground.png');
         this.load.image('ground2', 'assets/ground2.png');
-        this.load.image('bottle',     'assets/bottle.png');
+        this.load.image('bottle',  'assets/bottle.png');
+        this.load.image('bottle2', 'assets/bottle2.png');
         this.load.image('background',  'assets/background.png');
         this.load.image('background2', 'assets/background2.png');
 

@@ -42,8 +42,8 @@ class TitleScene extends Phaser.Scene {
             strokeThickness: 6
         });
 
-        txt(W/2, 57, 'Thermas de Lindóia  •  1926', {
-            fontSize: '11px',
+        txt(W/2, 57, '100 anos da visita de Marie Curie  •  1926 – 2026', {
+            fontSize: '10px',
             color: '#66ccff',
             stroke: '#000000',
             strokeThickness: 3

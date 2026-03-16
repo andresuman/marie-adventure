@@ -49,10 +49,13 @@ class GameScene extends Phaser.Scene {
         this.nextCapyX = 380;
 
         // ── Garrafa (objetivo final) ──────────────────────────────────────────
-        const bottleScale = 0.15;            // 316×718 → ~47×108 px (um pouco maior que Marie)
+        // Fase 1: garrafa antiga (316×718); Fase 2: garrafa Lindoya moderna (105×240)
+        const bottleKey   = this.level === 2 ? 'bottle2' : 'bottle';
+        const bottleH     = this.level === 2 ? 240 : 718;
+        const bottleScale = this.level === 2 ? 0.45 : 0.15;
         const bottleX     = this._levelWidth - 80;
-        const bottleY     = GROUND_Y - (718 * bottleScale) / 2 + 6;
-        this.bottle = this.physics.add.staticSprite(bottleX, bottleY, 'bottle')
+        const bottleY     = GROUND_Y - (bottleH * bottleScale) / 2 + 6;
+        this.bottle = this.physics.add.staticSprite(bottleX, bottleY, bottleKey)
             .setScale(bottleScale)
             .setDepth(10);
         this.bottle.refreshBody();
@@ -98,7 +101,8 @@ class GameScene extends Phaser.Scene {
             loop: true
         });
 
-        this.scene.launch('HUDScene', { gameScene: this });
+        this.scene.launch('HUDScene', { gameScene: this, level: this.level });
+        this._showPhaseAnnouncement();
     }
 
     update() {
@@ -147,14 +151,15 @@ class GameScene extends Phaser.Scene {
                 if (!marieOnGround) {
                     // Marie estava no ar — passagem limpa válida
                     capy._scored = true;
-                    const pts = 100 * this.combo;
-                    this.sndCleanPass(this.combo);
+                    const usedCombo = this.combo;
+                    const pts = 100 * usedCombo;
+                    this.sndCleanPass(usedCombo);
                     this.score       += pts;
                     this.comboPoints += pts;
                     this.combo++;
                     this.events.emit('scoreChanged', this.score);
                     this.events.emit('comboChanged',  this.combo);
-                    this._floatText(`+${pts}`, this.marie.x, this.marie.y - 40, '#44ff88');
+                    this._floatText(`+${pts}`, this.marie.x, this.marie.y - 40, '#44ff88', usedCombo);
                 } else {
                     // Marie estava no chão — sem pontos, não tenta novamente
                     capy._missed = true;
@@ -229,9 +234,7 @@ class GameScene extends Phaser.Scene {
         this.sndWin();
 
         if (this.level === 1) {
-            // Transição para a fase 2 — mostra aviso breve e carrega próxima fase
-            this._floatText('FASE 2 →', marie.x, marie.y - 50, '#ffe040');
-            this.time.delayedCall(900, () => {
+            this.time.delayedCall(600, () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('GameScene', { level: 2, score: this.score });
             });
@@ -308,14 +311,43 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Texto flutuante de pontuação ──────────────────────────────────────────
-    _floatText(text, x, y, color) {
-        const t = this.add.text(x, y, text, {
-            fontFamily: 'monospace', fontSize: '12px',
-            color, stroke: '#000000', strokeThickness: 3,
+    // usedCombo opcional: se > 1 exibe "×N" junto para reforçar o multiplicador
+    _floatText(text, x, y, color, usedCombo) {
+        const label = text;
+        const size  = usedCombo && usedCombo >= 5 ? '18px' : usedCombo && usedCombo >= 3 ? '16px' : '14px';
+        const t = this.add.text(x, y, label, {
+            fontFamily: 'monospace', fontSize: size,
+            color, stroke: '#000000', strokeThickness: 4,
         }).setOrigin(0.5).setDepth(20);
+        // Fica parado 500ms para a criança ler, depois sobe e some
         this.tweens.add({
-            targets: t, y: y - 36, alpha: 0, duration: 900,
+            targets: t, y: y - 44, alpha: 0,
+            delay: 500, duration: 700,
             onComplete: () => t.destroy(),
+        });
+    }
+
+    // ── Anúncio de fase no início ─────────────────────────────────────────────
+    _showPhaseAnnouncement() {
+        const W   = this.scale.width;
+        const H   = this.scale.height;
+        const cidade = this.level === 2 ? 'Águas de Lindóia  ·  2026'
+                                        : 'Thermas de Lindoya  ·  1926';
+
+        const title = this.add.text(W / 2, H / 2 - 16, `FASE ${this.level}`, {
+            fontFamily: 'monospace', fontSize: '36px',
+            color: '#ffe040', stroke: '#000000', strokeThickness: 8,
+        }).setOrigin(0.5).setDepth(30).setScrollFactor(0);
+
+        const sub = this.add.text(W / 2, H / 2 + 18, cidade, {
+            fontFamily: 'monospace', fontSize: '13px',
+            color: '#66ccff', stroke: '#000000', strokeThickness: 4,
+        }).setOrigin(0.5).setDepth(30).setScrollFactor(0);
+
+        this.tweens.add({
+            targets: [title, sub], alpha: 0,
+            delay: 2800, duration: 700,
+            onComplete: () => { title.destroy(); sub.destroy(); },
         });
     }
 

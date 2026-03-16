@@ -24,7 +24,7 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 6
         });
 
-        txt(W/2, 62, 'Marie Curie tomou sua água Lindoya!', {
+        txt(W/2, 62, '100 anos depois, a água ainda cura!', {
             fontSize: '13px',
             color: '#ffe040',
             stroke: '#000000',
@@ -57,12 +57,12 @@ class WinScene extends Phaser.Scene {
             color: '#111111',
             stroke: '#000000',
             strokeThickness: 2,
-            backgroundColor: '#aaff44',
+            backgroundColor: '#ffe040',
             padding: { x: 16, y: 8 }
         }).setInteractive({ useHandCursor: true });
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
-        btn.on('pointerout',   () => btn.setBackgroundColor('#aaff44'));
+        btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
         // Crédito do desenvolvedor

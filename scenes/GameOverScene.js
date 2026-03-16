@@ -3,7 +3,6 @@ class GameOverScene extends Phaser.Scene {
 
     init(data) {
         this.finalScore = data.score || 0;
-        this.finalTime  = data.time  || 0;
     }
 
     create() {
@@ -23,41 +22,18 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 6
         });
 
-        txt(W/2, 62, 'As capivaras atravessaram seu caminho...', {
+        txt(W/2, 62, 'Marie não chegou à água desta vez...', {
             fontSize: '13px',
             color: '#ff8844',
             stroke: '#000000',
             strokeThickness: 4
         });
 
-        txt(W/2, 90, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
+        txt(W/2, 110, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 4
-        });
-
-        const m = Math.floor(this.finalTime / 60);
-        const s = this.finalTime % 60;
-        txt(W/2, 111, `TEMPO RESTANTE   ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`, {
-            fontSize: '14px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 4
-        });
-
-        // Crédito comemorativo
-        txt(W/2, 138, '100 anos da visita de Marie Curie', {
-            fontSize: '11px',
-            color: '#66ccff',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
-        txt(W/2, 153, 'Águas de Lindóia  •  1926 – 2026', {
-            fontSize: '11px',
-            color: '#66ccff',
-            stroke: '#000000',
-            strokeThickness: 3
         });
 
         const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
@@ -65,12 +41,12 @@ class GameOverScene extends Phaser.Scene {
             color: '#111111',
             stroke: '#000000',
             strokeThickness: 2,
-            backgroundColor: '#ffdd00',
+            backgroundColor: '#ffe040',
             padding: { x: 16, y: 8 }
         }).setInteractive({ useHandCursor: true });
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
-        btn.on('pointerout',   () => btn.setBackgroundColor('#ffdd00'));
+        btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
         // Crédito do desenvolvedor
