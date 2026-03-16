@@ -4,6 +4,7 @@ class WinScene extends Phaser.Scene {
     init(data) {
         this.finalScore = data.score || 0;
         this.finalTime  = data.time  || 0;
+        this.finalLevel = data.level || 2;
     }
 
     create() {
@@ -30,16 +31,7 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        txt(W/2, 90, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
-            fontSize: '14px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 4
-        });
-
-        const m = Math.floor(this.finalTime / 60);
-        const s = this.finalTime % 60;
-        txt(W/2, 111, `TEMPO RESTANTE   ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`, {
+        txt(W/2, 100, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
             stroke: '#000000',
@@ -71,7 +63,7 @@ class WinScene extends Phaser.Scene {
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));
         btn.on('pointerout',   () => btn.setBackgroundColor('#aaff44'));
-        btn.on('pointerdown',  () => this.scene.start('GameScene'));
+        btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
         // Crédito do desenvolvedor
         txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
@@ -81,7 +73,7 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 3
         });
 
-        this.input.keyboard.once('keydown', () => this.scene.start('GameScene'));
+        this.input.keyboard.once('keydown', () => this.scene.start('GameScene', { level: 1 }));
 
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 550, yoyo: true, repeat: -1 });
     }

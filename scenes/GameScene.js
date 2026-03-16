@@ -1,4 +1,4 @@
-const GROUND_Y    = 238;
+const GROUND_Y    = 248;
 const TILE_W      = 64;
 const TILE_H      = 48;
 const MARIE_SCALE = 0.28;
@@ -7,14 +7,19 @@ const MARIE_SPEED = 140;
 const JUMP_VY     = -440;
 const LIVES_START = 3;
 const CAPY_SPEED  = 60;
-const LEVEL_WIDTH = 1946;   // largura exata do background.png
+const LEVEL_WIDTH = 1946;   // largura exata do background.png (fase 1)
 const TIME_START  = 60;     // 1 minuto em segundos
+
+// Parâmetros específicos da fase 2 (mais difícil: capivaras mais rápidas, fase mais longa)
+const LEVEL_WIDTH_2 = 2972; // largura exata do background2.png
+const CAPY_SPEED_2  = 85;   // capivaras 40% mais rápidas na fase 2
 
 class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
 
-    init() {
-        this.score       = 0;
+    init(data) {
+        this.level       = data && data.level ? data.level : 1;
+        this.score       = data && data.score ? data.score : 0;  // carrega pontuação da fase anterior
         this.lives       = LIVES_START;
         this.gameTime    = TIME_START;
         this.dead        = false;
@@ -26,12 +31,18 @@ class GameScene extends Phaser.Scene {
     create() {
         const H = this.scale.height;
 
+        // Parâmetros que variam entre fases
+        this._levelWidth = this.level === 2 ? LEVEL_WIDTH_2 : LEVEL_WIDTH;
+        this._capySpeed  = this.level === 2 ? CAPY_SPEED_2  : CAPY_SPEED;
+        this._bgKey      = this.level === 2 ? 'background2' : 'background';
+        this._groundKey  = this.level === 2 ? 'ground2'     : 'ground';
+
         // ── Fundo (imagem estática de largura fixa) ──────────────────────────
-        this.add.image(0, 0, 'background').setOrigin(0, 0).setDepth(0);
+        this.add.image(0, 0, this._bgKey).setOrigin(0, 0).setDepth(0);
 
         // ── Chão (gerado de uma vez para toda a fase) ─────────────────────────
         this.ground = this.physics.add.staticGroup();
-        this.spawnGround(0, LEVEL_WIDTH);
+        this.spawnGround(0, this._levelWidth);
 
         // ── Capivaras ────────────────────────────────────────────────────────
         this.capybaras = this.physics.add.group();
@@ -39,7 +50,7 @@ class GameScene extends Phaser.Scene {
 
         // ── Garrafa (objetivo final) ──────────────────────────────────────────
         const bottleScale = 0.15;            // 316×718 → ~47×108 px (um pouco maior que Marie)
-        const bottleX     = LEVEL_WIDTH - 80;
+        const bottleX     = this._levelWidth - 80;
         const bottleY     = GROUND_Y - (718 * bottleScale) / 2 + 6;
         this.bottle = this.physics.add.staticSprite(bottleX, bottleY, 'bottle')
             .setScale(bottleScale)
@@ -64,7 +75,7 @@ class GameScene extends Phaser.Scene {
             this.onReachBottle, null, this);
 
         // ── Câmera ───────────────────────────────────────────────────────────
-        this.cameras.main.setBounds(0, 0, LEVEL_WIDTH, H);
+        this.cameras.main.setBounds(0, 0, this._levelWidth, H);
         this.cameras.main.startFollow(this.marie, true, 0.1, 0);
 
         // ── Controles ────────────────────────────────────────────────────────
@@ -105,8 +116,8 @@ class GameScene extends Phaser.Scene {
         else if (goRight) { vx =  MARIE_SPEED; this.marie.setFlipX(false); }
 
         // Limites horizontais: não sai da fase nem fica atrás da câmera
-        if (this.marie.x < cam + 16)         this.marie.x = cam + 16;
-        if (this.marie.x > LEVEL_WIDTH - 20) this.marie.x = LEVEL_WIDTH - 20;
+        if (this.marie.x < cam + 16)                  this.marie.x = cam + 16;
+        if (this.marie.x > this._levelWidth - 20) this.marie.x = this._levelWidth - 20;
         this.marie.setVelocityX(vx);
 
         // ── Pulo ──────────────────────────────────────────────────────────────
@@ -118,25 +129,36 @@ class GameScene extends Phaser.Scene {
         if (vx !== 0) this.marie.anims.play('marie-walk', true);
         else          this.marie.anims.play('marie-idle', true);
 
-        // ── Gerar capivaras (até a zona da garrafa) ──────────────────────────
-        if (cam + 550 > this.nextCapyX && this.nextCapyX < LEVEL_WIDTH - 300) {
-            this.spawnCapybara(this.nextCapyX);
-            this.nextCapyX += Phaser.Math.Between(280, 460);
+        // ── Gerar capivaras continuamente a partir da borda direita da câmera ──
+        // Spawna logo além do que é visível; para só na zona de 300px antes da garrafa.
+        const spawnX = cam + this.scale.width + 80;
+        if (spawnX > this.nextCapyX) {
+            if (spawnX < this._levelWidth - 300) {
+                this.spawnCapybara(spawnX);
+            }
+            this.nextCapyX = spawnX + Phaser.Math.Between(280, 460);
         }
 
         // ── Detectar passagem limpa + limpar capivaras fora da tela ──────────
+        const marieOnGround = this.marie.body.blocked.down || this.marie.body.touching.down;
         this.capybaras.getChildren().forEach(capy => {
-            // Passagem limpa: capivara cruzou a posição de Marie sem ser pisada
-            if (!capy._scored && !capy._stomped && capy.x < this.marie.x - 40) {
-                capy._scored = true;
-                const pts = 100 * this.combo;
-                this.sndCleanPass(this.combo);  // som antes de incrementar: reflete o nível atingido
-                this.score      += pts;
-                this.comboPoints += pts;
-                this.combo++;
-                this.events.emit('scoreChanged', this.score);
-                this.events.emit('comboChanged',  this.combo);
-                this._floatText(`+${pts}`, this.marie.x, this.marie.y - 40, '#44ff88');
+            // Momento em que a capivara cruza Marie: decide se pontua ou não
+            if (!capy._scored && !capy._stomped && !capy._missed && capy.x < this.marie.x - 40) {
+                if (!marieOnGround) {
+                    // Marie estava no ar — passagem limpa válida
+                    capy._scored = true;
+                    const pts = 100 * this.combo;
+                    this.sndCleanPass(this.combo);
+                    this.score       += pts;
+                    this.comboPoints += pts;
+                    this.combo++;
+                    this.events.emit('scoreChanged', this.score);
+                    this.events.emit('comboChanged',  this.combo);
+                    this._floatText(`+${pts}`, this.marie.x, this.marie.y - 40, '#44ff88');
+                } else {
+                    // Marie estava no chão — sem pontos, não tenta novamente
+                    capy._missed = true;
+                }
             }
             if (capy.x < cam - 200) capy.destroy();
         });
@@ -148,7 +170,7 @@ class GameScene extends Phaser.Scene {
     // ── Chão ─────────────────────────────────────────────────────────────────
     spawnGround(from, to) {
         for (let x = from; x < to; x += TILE_W) {
-            const tile = this.ground.create(x + TILE_W/2, GROUND_Y + TILE_H/2, 'ground');
+            const tile = this.ground.create(x + TILE_W/2, GROUND_Y + TILE_H/2, this._groundKey);
             tile.setDisplaySize(TILE_W, TILE_H).refreshBody();
         }
     }
@@ -157,7 +179,7 @@ class GameScene extends Phaser.Scene {
     spawnCapybara(x) {
         const capy = this.capybaras.create(x, GROUND_Y - 30, 'capy_walk1')
             .setScale(CAPY_SCALE)
-            .setVelocityX(-CAPY_SPEED)
+            .setVelocityX(-this._capySpeed)
             .setDepth(10);
 
         capy.body.setSize(276 * 0.72, 200 * 0.68);
@@ -205,10 +227,21 @@ class GameScene extends Phaser.Scene {
         bottle.destroy();
         marie.setVelocityX(0);
         this.sndWin();
-        this.time.delayedCall(600, () => {
-            this.scene.stop('HUDScene');
-            this.scene.start('WinScene', { score: this.score, time: this.gameTime });
-        });
+
+        if (this.level === 1) {
+            // Transição para a fase 2 — mostra aviso breve e carrega próxima fase
+            this._floatText('FASE 2 →', marie.x, marie.y - 50, '#ffe040');
+            this.time.delayedCall(900, () => {
+                this.scene.stop('HUDScene');
+                this.scene.start('GameScene', { level: 2, score: this.score });
+            });
+        } else {
+            // Fase 2 concluída — vitória final
+            this.time.delayedCall(600, () => {
+                this.scene.stop('HUDScene');
+                this.scene.start('WinScene', { score: this.score, time: this.gameTime, level: this.level });
+            });
+        }
     }
 
     // ── Perder vida ───────────────────────────────────────────────────────────

@@ -50,16 +50,16 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Objetivo
-        txt(W/2, 90, 'Chegue à garrafa desviando das capivaras.', {
+        txt(W/2, 90, 'Pule por cima das capivaras sem cair nelas.', {
             fontSize: '12px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 3
         });
 
-        txt(W/2, 108, 'Passagens limpas valem mais pontos!', {
-            fontSize: '12px',
-            color: '#ffe040',
+        txt(W/2, 108, 'Cair em cima perde pontos  ·  Encostar perde vida', {
+            fontSize: '11px',
+            color: '#ff8844',
             stroke: '#000000',
             strokeThickness: 3
         });
