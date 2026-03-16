@@ -14,7 +14,7 @@ class HUDScene extends Phaser.Scene {
 
         // ── Score + estrela de acertos (coluna esquerda) ─────────────────────
         this.add.text(8, 4, 'PONTOS', style);
-        this.scoreTxt = this.add.text(8, 14, '000000', style);
+        this.scoreTxt = this.add.text(8, 14, '00000', style);
         // ★N fica logo abaixo da pontuação, mesma coluna
         this.comboTxt = this.add.text(8, 24, '★0', {
             fontFamily: 'monospace', fontSize: '11px', color: '#888888',
@@ -35,7 +35,7 @@ class HUDScene extends Phaser.Scene {
 
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
-            this.scoreTxt.setText(String(v).padStart(6, '0'));
+            this.scoreTxt.setText(String(v).padStart(5, '0'));
         });
 
         this.gameScene.events.on('livesChanged', (v) => {
@@ -44,7 +44,7 @@ class HUDScene extends Phaser.Scene {
 
         this.gameScene.events.on('timeChanged', (v) => {
             this.timeTxt.setText(this._fmt(v));
-            this.timeTxt.setColor(v <= 20 ? '#ff4444' : '#ffffff');
+            this.timeTxt.setColor(v <= 10 ? '#ff4444' : '#ffffff');
         });
 
         this.gameScene.events.on('comboChanged', (v) => {

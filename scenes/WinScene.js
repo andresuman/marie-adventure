@@ -31,7 +31,7 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        txt(W/2, 100, `PONTUAÇÃO   ${String(this.finalScore).padStart(6, '0')}`, {
+        txt(W/2, 100, `PONTUAÇÃO   ${String(this.finalScore).padStart(5, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
             stroke: '#000000',

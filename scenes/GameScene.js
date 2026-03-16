@@ -46,13 +46,12 @@ class GameScene extends Phaser.Scene {
 
         // ── Capivaras ────────────────────────────────────────────────────────
         this.capybaras = this.physics.add.group();
-        this.nextCapyX = 380;
 
         // ── Garrafa (objetivo final) ──────────────────────────────────────────
         // Fase 1: garrafa antiga (316×718); Fase 2: garrafa Lindoya moderna (105×240)
         const bottleKey   = this.level === 2 ? 'bottle2' : 'bottle';
         const bottleH     = this.level === 2 ? 240 : 718;
-        const bottleScale = this.level === 2 ? 0.45 : 0.15;
+        const bottleScale = this.level === 2 ? 0.48 : 0.15;
         const bottleX     = this._levelWidth - 80;
         const bottleY     = GROUND_Y - (bottleH * bottleScale) / 2 + 6;
         this.bottle = this.physics.add.staticSprite(bottleX, bottleY, bottleKey)
@@ -96,13 +95,15 @@ class GameScene extends Phaser.Scene {
                 if (this.dead) return;
                 this.gameTime--;
                 this.events.emit('timeChanged', this.gameTime);
-                if (this.gameTime <= 0) this.triggerGameOver();
+                if (this.gameTime <= 0) { this.triggerGameOver(); return; }
+                if (this.gameTime <= 10) this.sndTick();
             },
             loop: true
         });
 
         this.scene.launch('HUDScene', { gameScene: this, level: this.level });
         this._showPhaseAnnouncement();
+        this._scheduleNextCapy();
     }
 
     update() {
@@ -132,16 +133,6 @@ class GameScene extends Phaser.Scene {
         // ── Animação ─────────────────────────────────────────────────────────
         if (vx !== 0) this.marie.anims.play('marie-walk', true);
         else          this.marie.anims.play('marie-idle', true);
-
-        // ── Gerar capivaras continuamente a partir da borda direita da câmera ──
-        // Spawna logo além do que é visível; para só na zona de 300px antes da garrafa.
-        const spawnX = cam + this.scale.width + 80;
-        if (spawnX > this.nextCapyX) {
-            if (spawnX < this._levelWidth - 300) {
-                this.spawnCapybara(spawnX);
-            }
-            this.nextCapyX = spawnX + Phaser.Math.Between(280, 460);
-        }
 
         // ── Detectar passagem limpa + limpar capivaras fora da tela ──────────
         const marieOnGround = this.marie.body.blocked.down || this.marie.body.touching.down;
@@ -180,11 +171,33 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    // ── Agendar próxima capivara por timer (intervalo e velocidade crescem com o tempo) ─
+    _scheduleNextCapy() {
+        const elapsed  = TIME_START - this.gameTime;
+        const progress = elapsed / TIME_START;  // 0 no início, 1 no fim
+        // Intervalo diminui de 3500ms para 1500ms ao longo da fase
+        const baseDelay = Math.max(1500, 3500 - 2000 * progress);
+        const delay = baseDelay + Phaser.Math.Between(-400, 400);
+
+        this.time.delayedCall(delay, () => {
+            if (this.dead) return;
+            const cam    = this.cameras.main.scrollX;
+            const spawnX = cam + this.scale.width + 60;
+            this.spawnCapybara(spawnX);
+            this._scheduleNextCapy();
+        });
+    }
+
     // ── Capivara ──────────────────────────────────────────────────────────────
     spawnCapybara(x) {
+        // Velocidade cresce até 80% acima do base conforme o tempo passa
+        const elapsed  = TIME_START - this.gameTime;
+        const progress = elapsed / TIME_START;
+        const speed    = this._capySpeed * (1 + 0.8 * progress);
+
         const capy = this.capybaras.create(x, GROUND_Y - 30, 'capy_walk1')
             .setScale(CAPY_SCALE)
-            .setVelocityX(-this._capySpeed)
+            .setVelocityX(-speed)
             .setDepth(10);
 
         capy.body.setSize(276 * 0.72, 200 * 0.68);
@@ -399,6 +412,19 @@ class GameScene extends Phaser.Scene {
                 g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.18);
                 o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.20);
             });
+        });
+    }
+
+    sndTick() {
+        // Bip agudo e curto para contagem regressiva dos últimos 10 segundos
+        this._sfx(ac => {
+            const o = ac.createOscillator(), g = ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type = 'square';
+            o.frequency.setValueAtTime(880, ac.currentTime);
+            g.gain.setValueAtTime(0.10, ac.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.06);
+            o.start(ac.currentTime); o.stop(ac.currentTime + 0.06);
         });
     }
 
