@@ -26,7 +26,7 @@ class TitleScene extends Phaser.Scene {
         const W = this.scale.width;
         const H = this.scale.height;
 
-        // Fundo: imagem do jogo com overlay escuro
+        // Overlay escuro sobre o background — garante contraste suficiente para os textos da tela inicial
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.rectangle(W/2, H/2, W, H, 0x000a1a, 0.82);
 
@@ -104,7 +104,6 @@ class TitleScene extends Phaser.Scene {
                 { x: ix + 6,  y: swY + 5 },
             ];
 
-            // Formas sólidas (preenchimento)
             swIcon.fillStyle(hex, 1);
             swIcon.fillRect(ix, swY - 5, 6, 10);
             swIcon.fillPoints(hornPts, true);
@@ -115,7 +114,7 @@ class TitleScene extends Phaser.Scene {
             swIcon.strokePoints(hornPts, true);
 
             if (on) {
-                // Ondas sonoras: preto por baixo (mais espesso), cor por cima
+                // Contorno duplo (preto espesso + cor fina por cima) para o ícone ser legível sobre qualquer cor de fundo
                 swIcon.lineStyle(4, 0x000000, 1);
                 swIcon.beginPath();
                 swIcon.arc(ix + 16, swY, 5, -Math.PI * 0.4, Math.PI * 0.4, false);
@@ -132,7 +131,7 @@ class TitleScene extends Phaser.Scene {
                 swIcon.arc(ix + 16, swY, 10, -Math.PI * 0.4, Math.PI * 0.4, false);
                 swIcon.strokePath();
             } else {
-                // X de mudo: preto por baixo, cor por cima
+                // Mesmo padrão de contorno duplo do ícone de som ativo
                 swIcon.lineStyle(4, 0x000000, 1);
                 swIcon.beginPath();
                 swIcon.moveTo(ix + 19, swY - 5);

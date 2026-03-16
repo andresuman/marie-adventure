@@ -5,7 +5,7 @@ const MARIE_SCALE = 0.28;
 const CAPY_SCALE  = 0.22;
 const MARIE_SPEED = 140;
 const JUMP_VY     = -440;
-const LIVES_START = 3;
+const LIVES_START = 5;
 const CAPY_SPEED  = 60;
 const LEVEL_WIDTH = 1946;   // largura exata do background.png (fase 1)
 const TIME_START  = 60;     // 1 minuto em segundos
@@ -20,7 +20,7 @@ class GameScene extends Phaser.Scene {
     init(data) {
         this.level       = data && data.level ? data.level : 1;
         this.score       = data && data.score ? data.score : 0;  // carrega pontuação da fase anterior
-        this.lives       = LIVES_START;
+        this.lives       = data && data.lives ? data.lives : LIVES_START;  // carrega vidas da fase anterior
         this.gameTime    = TIME_START;
         this.dead        = false;
         this.invincible  = false;
@@ -249,7 +249,7 @@ class GameScene extends Phaser.Scene {
         if (this.level === 1) {
             this.time.delayedCall(600, () => {
                 this.scene.stop('HUDScene');
-                this.scene.start('GameScene', { level: 2, score: this.score });
+                this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives });
             });
         } else {
             // Fase 2 concluída — vitória final
@@ -324,7 +324,7 @@ class GameScene extends Phaser.Scene {
     }
 
     // ── Texto flutuante de pontuação ──────────────────────────────────────────
-    // usedCombo opcional: se > 1 exibe "×N" junto para reforçar o multiplicador
+    // usedCombo opcional: fonte maior em combo alto para reforçar o impacto visual
     _floatText(text, x, y, color, usedCombo) {
         const label = text;
         const size  = usedCombo && usedCombo >= 5 ? '18px' : usedCombo && usedCombo >= 3 ? '16px' : '14px';
@@ -416,7 +416,7 @@ class GameScene extends Phaser.Scene {
     }
 
     sndTick() {
-        // Bip agudo e curto para contagem regressiva dos últimos 10 segundos
+        // Frequência alta (880 Hz) reforça urgência — diferencia o tick do relógio dos outros SFX de jogo
         this._sfx(ac => {
             const o = ac.createOscillator(), g = ac.createGain();
             o.connect(g); g.connect(ac.destination);
@@ -429,7 +429,7 @@ class GameScene extends Phaser.Scene {
     }
 
     sndHurt() {
-        // Som curto de “dano”: descida rápida de frequência + ruído leve
+        // Sawtooth tem timbre mais áspero que square — transmite dano melhor do que os SFX de ação
         this._sfx(ac => {
             const o = ac.createOscillator(), g = ac.createGain();
             o.connect(g); g.connect(ac.destination);

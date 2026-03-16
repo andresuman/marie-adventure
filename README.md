@@ -21,7 +21,8 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 - Pisar em uma capivara perde os pontos acumulados no combo atual e zera o multiplicador.
 - Encostar de lado em uma capivara custa uma vida e zera o multiplicador.
 - Nos últimos 10 segundos o cronômetro fica vermelho e um bip soa a cada segundo.
-- O jogo termina ao perder todas as 3 vidas ou ao esgotar o tempo.
+- O jogo tem **5 vidas**; o jogo termina ao perdê-las todas ou ao esgotar o tempo.
+- Vidas e pontuação acumuladas na fase 1 **são mantidas** na fase 2; somente o combo é zerado.
 
 ## Áudio
 

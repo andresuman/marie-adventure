@@ -61,7 +61,7 @@ const MARIE_SCALE = 0.28;   // Escala do sprite da Marie (192×302 px original)
 const CAPY_SCALE  = 0.22;   // Escala do sprite da capivara (276×200 px original)
 const MARIE_SPEED = 140;    // Velocidade horizontal da Marie (px/s)
 const JUMP_VY     = -440;   // Velocidade vertical do pulo
-const LIVES_START = 3;      // Vidas iniciais (usado tb em HUDScene — dependência global)
+const LIVES_START = 5;      // Vidas iniciais (usado tb em HUDScene — dependência global)
 const CAPY_SPEED  = 60;     // Velocidade base das capivaras na fase 1
 const LEVEL_WIDTH = 1946;   // Largura exata do background.png (fase 1)
 const TIME_START  = 60;     // Tempo de jogo em segundos
@@ -383,6 +383,14 @@ this.tweens.add({
 ### Reiniciar a fase
 Em qualquer cena: `this.scene.start('GameScene', { level: 1 })` — `GameScene.init()` reseta todos os estados.
 Sempre passar `{ level: 1 }` explicitamente para garantir que o restart volta à fase 1.
+
+### Transição fase 1 → fase 2
+Passar `score` **e** `lives` para preservar o progresso do jogador:
+```js
+this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives });
+```
+`init()` usa `data.lives` se presente; caso contrário cai no `LIVES_START`.
+O `combo` e `comboPoints` são zerados automaticamente por `init()` na troca de fase.
 
 ---
 

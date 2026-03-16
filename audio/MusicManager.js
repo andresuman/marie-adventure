@@ -96,7 +96,7 @@
         stop() {
             this._playingKey = null;
             if (this._loopTimer) { clearTimeout(this._loopTimer); this._loopTimer = null; }
-            // Para todos os oscillators agendados que ainda não foram reproduzidos
+            // Oscillators já agendados no WebAudio tocam mesmo após stop() se não forem cancelados explicitamente
             const now = this._ac ? this._ac.currentTime : 0;
             this._scheduled.forEach(n => {
                 try {

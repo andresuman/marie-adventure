@@ -15,7 +15,6 @@ class HUDScene extends Phaser.Scene {
         // ── Score + estrela de acertos (coluna esquerda) ─────────────────────
         this.add.text(8, 4, 'PONTOS', style);
         this.scoreTxt = this.add.text(8, 14, '00000', style);
-        // ★N fica logo abaixo da pontuação, mesma coluna
         this.comboTxt = this.add.text(8, 24, '★0', {
             fontFamily: 'monospace', fontSize: '11px', color: '#888888',
             stroke: '#000000', strokeThickness: 3,
@@ -32,6 +31,11 @@ class HUDScene extends Phaser.Scene {
         // ── Tempo regressivo (MM:SS) ──────────────────────────────────────────
         this.add.text(W - 4, 4, 'TEMPO', style).setOrigin(1, 0);
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
+
+        // ── Estado inicial: lê direto do gameScene para refletir dados carregados de fase anterior ──
+        // Eventos só disparam em mudanças — sem isso pontos e vidas ficam zerados até o primeiro evento.
+        this.scoreTxt.setText(String(this.gameScene.score).padStart(5, '0'));
+        this.heartIcons.forEach((h, i) => h.setAlpha(i < this.gameScene.lives ? 1 : 0.2));
 
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {
@@ -52,14 +56,12 @@ class HUDScene extends Phaser.Scene {
             const seguidos = v - 1;
             this.comboTxt.setText(`★${seguidos}`);
 
-            // Cor progressiva: cinza → amarelo → laranja → vermelho
             const color = seguidos === 0 ? '#888888'
                         : seguidos <= 2  ? '#ffdd00'
                         : seguidos <= 5  ? '#ff9900'
                         :                  '#ff4444';
             this.comboTxt.setColor(color);
 
-            // Pulso a cada acerto encadeado
             if (seguidos > 0) {
                 this.tweens.killTweensOf(this.comboTxt);
                 this.tweens.add({
