@@ -2,7 +2,7 @@
 
 Jogo 2D de plataforma em **Phaser 3** (HTML/JS puro), rodando direto no navegador — sem instalação, sem dependências de build.
 
-Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia** (1926–2026). Ajude a cientista a correr pelas ruas da cidade termal, desviar das capivaras que cruzam seu caminho e chegar até a garrafa de água Lindoya antes que o tempo acabe.
+Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia** (1926–2026). Ajude a cientista a correr pelas ruas da cidade termal, desviar das capivaras que cruzam seu caminho e chegar até a garrafa de água antes que o tempo acabe — em **duas fases**: Thermas de Lindoya (1926) e Águas de Lindóia (2026).
 
 ## Jogar online
 
@@ -15,10 +15,12 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 | Andar | ← / → ou A / D | ◄ ► |
 | Pular | ↑ ou W ou Espaço | ▲ |
 
-- **Objetivo:** chegue até a garrafa de água Lindoya no fim da fase.
-- Desvie das capivaras pulando por cima — cada passagem limpa vale **+100 × multiplicador** de combo.
+- **Objetivo:** chegue até a garrafa de água no fim de cada fase antes do tempo acabar.
+- Desvie das capivaras pulando por cima — cada passagem limpa (no ar) vale **+100 × combo**.
+- Capivaras aparecem continuamente e ficam mais rápidas com o passar do tempo.
 - Pisar em uma capivara perde os pontos acumulados no combo atual e zera o multiplicador.
 - Encostar de lado em uma capivara custa uma vida e zera o multiplicador.
+- Nos últimos 10 segundos o cronômetro fica vermelho e um bip soa a cada segundo.
 - O jogo termina ao perder todas as 3 vidas ou ao esgotar o tempo.
 
 ## Áudio
