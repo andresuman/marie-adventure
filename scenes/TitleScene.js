@@ -64,6 +64,16 @@ class TitleScene extends Phaser.Scene {
             strokeThickness: 3
         });
 
+        const hs = window.HighScore ? window.HighScore.get() : 0;
+        if (hs > 0) {
+            txt(W/2, 140, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+                fontSize: '12px',
+                color: '#44ff88',
+                stroke: '#000000',
+                strokeThickness: 3
+            });
+        }
+
         // Botão jogar
         const btn = txt(W/2, 170, '▶  JOGAR', {
             fontSize: '16px',

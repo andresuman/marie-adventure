@@ -2,7 +2,8 @@ class GameOverScene extends Phaser.Scene {
     constructor() { super({ key: 'GameOverScene' }); }
 
     init(data) {
-        this.finalScore = data.score || 0;
+        this.finalScore  = data.score || 0;
+        this.isNewRecord = window.HighScore ? window.HighScore.check(this.finalScore) : false;
     }
 
     create() {
@@ -35,6 +36,23 @@ class GameOverScene extends Phaser.Scene {
             stroke: '#000000',
             strokeThickness: 4
         });
+
+        const hs = window.HighScore ? window.HighScore.get() : 0;
+        txt(W/2, 135, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+            fontSize: '12px',
+            color: '#44ff88',
+            stroke: '#000000',
+            strokeThickness: 3
+        });
+
+        if (this.isNewRecord) {
+            txt(W/2, 157, '★  NOVO RECORDE!  ★', {
+                fontSize: '13px',
+                color: '#ffdd00',
+                stroke: '#000000',
+                strokeThickness: 4
+            });
+        }
 
         const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
