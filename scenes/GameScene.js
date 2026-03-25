@@ -14,6 +14,19 @@ const TIME_START  = 60;     // 1 minuto em segundos
 const LEVEL_WIDTH_2 = 2972; // largura exata do background2.png
 const CAPY_SPEED_2  = 85;   // capivaras 40% mais rápidas na fase 2
 
+// Parâmetros de spawn das capivaras
+const SPAWN_DELAY_MAX    = 3500; // intervalo inicial entre spawns (ms)
+const SPAWN_DELAY_MIN    = 1500; // intervalo mínimo ao fim da fase (ms)
+const SPAWN_DELAY_JITTER = 400;  // variação aleatória ±400ms no intervalo
+const SPAWN_SPEED_RAMP   = 0.8;  // fator de aceleração máxima (80% acima do base)
+
+// Tolerâncias de colisão e timings de transição
+const STOMP_TOLERANCE     = 14;  // px de tolerância para detectar pisada no topo da capivara
+const GAMEOVER_DELAY      = 700; // ms de espera antes de exibir GameOverScene
+const PHASE_TRANS_DELAY   = 600; // ms de espera antes de transição de fase
+const INVINCIBLE_REPEAT   = 10;  // repetições do piscar após levar dano
+const INVINCIBLE_DURATION = 90;  // duração de cada piscar de invencibilidade (ms)
+
 class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
 
@@ -171,13 +184,22 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    // ── Intervalo de spawn (ms) com jitter, baseado no progresso da fase ────────
+    _getSpawnInterval(progress) {
+        const base = Math.max(SPAWN_DELAY_MIN, SPAWN_DELAY_MAX - (SPAWN_DELAY_MAX - SPAWN_DELAY_MIN) * progress);
+        return base + Phaser.Math.Between(-SPAWN_DELAY_JITTER, SPAWN_DELAY_JITTER);
+    }
+
+    // ── Velocidade da capivara (px/s) baseada no progresso da fase ───────────
+    _getCapySpeed(progress) {
+        return this._capySpeed * (1 + SPAWN_SPEED_RAMP * progress);
+    }
+
     // ── Agendar próxima capivara por timer (intervalo e velocidade crescem com o tempo) ─
     _scheduleNextCapy() {
         const elapsed  = TIME_START - this.gameTime;
         const progress = elapsed / TIME_START;  // 0 no início, 1 no fim
-        // Intervalo diminui de 3500ms para 1500ms ao longo da fase
-        const baseDelay = Math.max(1500, 3500 - 2000 * progress);
-        const delay = baseDelay + Phaser.Math.Between(-400, 400);
+        const delay = this._getSpawnInterval(progress);
 
         this.time.delayedCall(delay, () => {
             if (this.dead) return;
@@ -190,10 +212,9 @@ class GameScene extends Phaser.Scene {
 
     // ── Capivara ──────────────────────────────────────────────────────────────
     spawnCapybara(x) {
-        // Velocidade cresce até 80% acima do base conforme o tempo passa
         const elapsed  = TIME_START - this.gameTime;
         const progress = elapsed / TIME_START;
-        const speed    = this._capySpeed * (1 + 0.8 * progress);
+        const speed    = this._getCapySpeed(progress);
 
         const capy = this.capybaras.create(x, GROUND_Y - 30, 'capy_walk1')
             .setScale(CAPY_SCALE)
@@ -212,7 +233,7 @@ class GameScene extends Phaser.Scene {
         const marieFeet = marie.body.bottom;
         const capyTop   = capy.body.top;
 
-        if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
+        if (marieFeet <= capyTop + STOMP_TOLERANCE && marie.body.velocity.y > 0) {
             // Pisou na capivara — penalidade: perde os pontos do combo atual
             capy._stomped = true;
             const visualBottom = capy.y + capy.displayHeight / 2;
@@ -247,13 +268,13 @@ class GameScene extends Phaser.Scene {
         this.sndWin();
 
         if (this.level === 1) {
-            this.time.delayedCall(600, () => {
+            this.time.delayedCall(PHASE_TRANS_DELAY, () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives });
             });
         } else {
             // Fase 2 concluída — vitória final
-            this.time.delayedCall(600, () => {
+            this.time.delayedCall(PHASE_TRANS_DELAY, () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('WinScene', { score: this.score, time: this.gameTime, level: this.level });
             });
@@ -275,8 +296,8 @@ class GameScene extends Phaser.Scene {
 
         this.invincible = true;
         this.tweens.add({
-            targets: this.marie, alpha: 0.25, duration: 90,
-            yoyo: true, repeat: 10,
+            targets: this.marie, alpha: 0.25, duration: INVINCIBLE_DURATION,
+            yoyo: true, repeat: INVINCIBLE_REPEAT,
             onComplete: () => { this.marie.setAlpha(1); this.invincible = false; }
         });
 
@@ -289,7 +310,7 @@ class GameScene extends Phaser.Scene {
     triggerGameOver() {
         this.dead = true;
         this.marie.setVelocity(0, 0);
-        this.time.delayedCall(700, () => {
+        this.time.delayedCall(GAMEOVER_DELAY, () => {
             this.scene.stop('HUDScene');
             this.scene.start('GameOverScene', { score: this.score, time: this.gameTime });
         });
