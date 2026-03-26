@@ -56,13 +56,6 @@ class WinScene extends Phaser.Scene {
             });
         }
 
-        txt(W/2, 158, '100 anos da visita de Marie Curie  •  1926 – 2026', {
-            fontSize: '10px',
-            color: '#66ccff',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
-
         const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
