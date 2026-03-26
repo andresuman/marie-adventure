@@ -54,7 +54,7 @@ class GameOverScene extends Phaser.Scene {
             });
         }
 
-        const btn = txt(W/2, 175, '▶  JOGAR NOVAMENTE', {
+        const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
