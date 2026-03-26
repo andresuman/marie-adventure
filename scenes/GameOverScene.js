@@ -75,7 +75,10 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 3
         });
 
-        this.input.keyboard.once('keydown', () => this.scene.start('GameScene', { level: 1 }));
+        // Delay evita restart acidental por tecla ainda pressionada no fim do jogo
+        this.time.delayedCall(1200, () => {
+            this.input.keyboard.once('keydown', () => this.scene.start('GameScene', { level: 1 }));
+        });
 
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 550, yoyo: true, repeat: -1 });
     }

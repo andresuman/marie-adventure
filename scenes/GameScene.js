@@ -468,7 +468,7 @@ class GameScene extends Phaser.Scene {
     setupTouchControls() {
         const W = this.scale.width;
         const H = this.scale.height;
-        const sz = 48, pad = 10;
+        const sz = 60, pad = 8;
 
         const mkBtn = (x, y, label) => {
             const c = this.add.container(x, y).setScrollFactor(0).setDepth(20);
