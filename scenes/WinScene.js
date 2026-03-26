@@ -77,11 +77,13 @@ class WinScene extends Phaser.Scene {
         btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
-        // Crédito discreto no canto inferior direito
-        this.add.text(W - 6, H - 5, '@andresuman', {
-            fontFamily: 'monospace', fontSize: '9px',
-            color: '#666666', resolution: 3,
-        }).setOrigin(1, 1);
+        // Crédito
+        txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
+            fontSize: '11px',
+            color: '#cccccc',
+            stroke: '#000000',
+            strokeThickness: 3
+        });
 
         // Delay evita restart acidental por tecla ainda pressionada no fim do jogo
         this.time.delayedCall(1200, () => {

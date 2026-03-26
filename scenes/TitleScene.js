@@ -180,11 +180,13 @@ class TitleScene extends Phaser.Scene {
                 }
             });
 
-        // Crédito discreto no canto inferior direito
-        this.add.text(W - 6, H - 5, '@andresuman', {
-            fontFamily: 'monospace', fontSize: '9px',
-            color: '#666666', resolution: 3,
-        }).setOrigin(1, 1);
+        // Crédito
+        txt(W/2, 252, 'Desenvolvido por Andre Suman  |  @andresuman', {
+            fontSize: '11px',
+            color: '#cccccc',
+            stroke: '#000000',
+            strokeThickness: 3
+        });
 
         // Teclado também inicia
         this.input.keyboard.once('keydown', () => {
