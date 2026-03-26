@@ -39,38 +39,32 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        const hs = window.HighScore ? window.HighScore.get() : 0;
-        txt(W/2, 120, `RECORDE   ${String(hs).padStart(5, '0')}`, {
-            fontSize: '12px',
-            color: '#44ff88',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
-
         if (this.isNewRecord) {
-            txt(W/2, 140, '★  NOVO RECORDE!  ★', {
+            txt(W/2, 125, '★  NOVO RECORDE!  ★', {
                 fontSize: '13px',
                 color: '#ffdd00',
                 stroke: '#000000',
                 strokeThickness: 4
             });
+        } else {
+            const hs = window.HighScore ? window.HighScore.get() : 0;
+            txt(W/2, 125, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+                fontSize: '12px',
+                color: '#aaaaaa',
+                stroke: '#000000',
+                strokeThickness: 3
+            });
         }
 
-        // Crédito comemorativo
-        txt(W/2, 158, '100 anos da visita de Marie Curie', {
-            fontSize: '11px',
-            color: '#66ccff',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
-        txt(W/2, 173, 'Águas de Lindóia  •  1926 – 2026', {
-            fontSize: '11px',
+        // Crédito comemorativo (linha única)
+        txt(W/2, 155, '100 anos da visita de Marie Curie  •  Águas de Lindóia  •  1926 – 2026', {
+            fontSize: '9px',
             color: '#66ccff',
             stroke: '#000000',
             strokeThickness: 3
         });
 
-        const btn = txt(W/2, 200, '▶  JOGAR NOVAMENTE', {
+        const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
@@ -83,13 +77,11 @@ class WinScene extends Phaser.Scene {
         btn.on('pointerout',   () => btn.setBackgroundColor('#ffe040'));
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
-        // Crédito do desenvolvedor
-        txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
-            fontSize: '11px',
-            color: '#cccccc',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
+        // Crédito discreto no canto inferior direito
+        this.add.text(W - 6, H - 5, '@andresuman', {
+            fontFamily: 'monospace', fontSize: '9px',
+            color: '#666666', resolution: 3,
+        }).setOrigin(1, 1);
 
         // Delay evita restart acidental por tecla ainda pressionada no fim do jogo
         this.time.delayedCall(1200, () => {
