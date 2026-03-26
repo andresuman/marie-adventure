@@ -56,9 +56,8 @@ class WinScene extends Phaser.Scene {
             });
         }
 
-        // Crédito comemorativo (linha única)
-        txt(W/2, 158, '100 anos da visita de Marie Curie  •  Águas de Lindóia  •  1926 – 2026', {
-            fontSize: '9px',
+        txt(W/2, 158, '100 anos da visita de Marie Curie  •  1926 – 2026', {
+            fontSize: '10px',
             color: '#66ccff',
             stroke: '#000000',
             strokeThickness: 3
@@ -78,7 +77,7 @@ class WinScene extends Phaser.Scene {
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
         // Crédito
-        txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
+        txt(W/2, 252, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '11px',
             color: '#cccccc',
             stroke: '#000000',
