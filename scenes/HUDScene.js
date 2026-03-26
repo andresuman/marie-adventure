@@ -16,7 +16,7 @@ class HUDScene extends Phaser.Scene {
         this.add.text(8, 4, 'PONTOS', style);
         this.scoreTxt = this.add.text(8, 14, '00000', style);
         this.comboTxt = this.add.text(8, 24, '★0', {
-            fontFamily: 'monospace', fontSize: '11px', color: '#888888',
+            fontFamily: 'monospace', fontSize: '11px', color: '#aaaaaa',
             stroke: '#000000', strokeThickness: 3,
         }).setOrigin(0, 0);
 
@@ -56,7 +56,7 @@ class HUDScene extends Phaser.Scene {
             const seguidos = v - 1;
             this.comboTxt.setText(`★${seguidos}`);
 
-            const color = seguidos === 0 ? '#888888'
+            const color = seguidos === 0 ? '#aaaaaa'
                         : seguidos <= 2  ? '#ffdd00'
                         : seguidos <= 5  ? '#ff9900'
                         :                  '#ff4444';

@@ -110,6 +110,10 @@ class GameScene extends Phaser.Scene {
                 this.events.emit('timeChanged', this.gameTime);
                 if (this.gameTime <= 0) { this.triggerGameOver(); return; }
                 if (this.gameTime <= 10) this.sndTick();
+                // Dobra a frequência dos ticks nos últimos 5s para aumentar a tensão
+                if (this.gameTime <= 5) {
+                    this.time.delayedCall(500, () => { if (!this.dead) this.sndTick(); });
+                }
             },
             loop: true
         });
@@ -265,15 +269,17 @@ class GameScene extends Phaser.Scene {
         this.dead = true;
         bottle.destroy();
         marie.setVelocityX(0);
-        this.sndWin();
 
         if (this.level === 1) {
+            // Transição de fase — fanfarra curta
+            this.sndWin();
             this.time.delayedCall(PHASE_TRANS_DELAY, () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives });
             });
         } else {
-            // Fase 2 concluída — vitória final
+            // Fase 2 concluída — fanfarra de vitória final
+            this.sndVictory();
             this.time.delayedCall(PHASE_TRANS_DELAY, () => {
                 this.scene.stop('HUDScene');
                 this.scene.start('WinScene', { score: this.score, time: this.gameTime, level: this.level });
@@ -310,6 +316,7 @@ class GameScene extends Phaser.Scene {
     triggerGameOver() {
         this.dead = true;
         this.marie.setVelocity(0, 0);
+        this.sndGameOver();
         this.time.delayedCall(GAMEOVER_DELAY, () => {
             this.scene.stop('HUDScene');
             this.scene.start('GameOverScene', { score: this.score, time: this.gameTime });
@@ -461,6 +468,36 @@ class GameScene extends Phaser.Scene {
             g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.20);
             o.start(ac.currentTime);
             o.stop(ac.currentTime + 0.20);
+        });
+    }
+
+    sndGameOver() {
+        // Descida cromática em sawtooth — derrota sem ser excessivamente dramático
+        this._sfx(ac => {
+            [[220, 0], [196, 0.16], [174, 0.32], [155, 0.52]].forEach(([f, d]) => {
+                const o = ac.createOscillator(), g = ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type = 'sawtooth';
+                o.frequency.setValueAtTime(f, ac.currentTime + d);
+                g.gain.setValueAtTime(0.15, ac.currentTime + d);
+                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.14);
+                o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.14);
+            });
+        });
+    }
+
+    sndVictory() {
+        // Fanfarra ascendente de cinco notas — distinta do sndWin() de transição de fase
+        this._sfx(ac => {
+            [[523, 0], [659, 0.12], [784, 0.24], [1047, 0.38], [1319, 0.55]].forEach(([f, d]) => {
+                const o = ac.createOscillator(), g = ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type = 'square';
+                o.frequency.value = f;
+                g.gain.setValueAtTime(0.13, ac.currentTime + d);
+                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.22);
+                o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.25);
+            });
         });
     }
 
