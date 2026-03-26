@@ -50,14 +50,14 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Objetivo
-        txt(W/2, 90, 'Pule por cima das capivaras sem cair nelas.', {
+        txt(W/2, 90, 'Pule por cima das capivaras!', {
             fontSize: '12px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 3
         });
 
-        txt(W/2, 108, 'Cair em cima perde pontos  ·  Encostar perde vida', {
+        txt(W/2, 108, 'Encostar perde vida  ·  Cair em cima perde pontos', {
             fontSize: '11px',
             color: '#ff8844',
             stroke: '#000000',
@@ -68,7 +68,7 @@ class TitleScene extends Phaser.Scene {
         if (hs > 0) {
             txt(W/2, 140, `RECORDE   ${String(hs).padStart(5, '0')}`, {
                 fontSize: '12px',
-                color: '#44ff88',
+                color: '#aaaaaa',
                 stroke: '#000000',
                 strokeThickness: 3
             });
@@ -180,13 +180,11 @@ class TitleScene extends Phaser.Scene {
                 }
             });
 
-        // Crédito
-        txt(W/2, 252, 'Desenvolvido por Andre Suman  |  @andresuman', {
-            fontSize: '11px',
-            color: '#cccccc',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
+        // Crédito discreto no canto inferior direito
+        this.add.text(W - 6, H - 5, '@andresuman', {
+            fontFamily: 'monospace', fontSize: '9px',
+            color: '#666666', resolution: 3,
+        }).setOrigin(1, 1);
 
         // Teclado também inicia
         this.input.keyboard.once('keydown', () => {
