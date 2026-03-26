@@ -34,13 +34,14 @@ Deploy via GitHub Pages: `https://andresuman.github.io/marie-adventure/`
 marie-adventure/
 ├── index.html              # Entrada; carrega scripts com ?v=YYYYMMDD
 ├── game.js                 # Config Phaser (480×270) + window.GAME_SETTINGS
+├── HighScore.js            # Persistência de recorde em localStorage (window.HighScore)
 ├── scenes/
 │   ├── BootScene.js        # preload() de assets + create() de animações → inicia TitleScene
-│   ├── TitleScene.js       # Tela inicial; toggle de música; inicia GameScene
+│   ├── TitleScene.js       # Tela inicial; toggle de música; high score; inicia GameScene
 │   ├── GameScene.js        # Loop principal; física; SFX; controles
 │   ├── HUDScene.js         # Overlay de pontos/vidas/tempo/combo (cena paralela)
-│   ├── GameOverScene.js    # Fim de jogo; restart → GameScene
-│   └── WinScene.js         # Vitória; restart → GameScene
+│   ├── GameOverScene.js    # Fim de jogo; high score; restart → GameScene
+│   └── WinScene.js         # Vitória; high score; restart → GameScene
 ├── audio/
 │   ├── AudioUnlock.js      # Cria window.SFX_AUDIO_CONTEXT; método unlock()
 │   ├── MusicManager.js     # Motor chiptune WebAudio; window.MusicManager
@@ -69,6 +70,19 @@ const TIME_START  = 60;     // Tempo de jogo em segundos
 // Parâmetros da fase 2 (mais difícil)
 const LEVEL_WIDTH_2 = 2972; // Largura exata do background2.png (~50% mais longa)
 const CAPY_SPEED_2  = 85;   // Velocidade base das capivaras na fase 2 (~40% mais rápidas)
+
+// Parâmetros de spawn das capivaras
+const SPAWN_DELAY_MAX    = 3500; // intervalo inicial entre spawns (ms)
+const SPAWN_DELAY_MIN    = 1500; // intervalo mínimo ao fim da fase (ms)
+const SPAWN_DELAY_JITTER = 400;  // variação aleatória ±400ms no intervalo
+const SPAWN_SPEED_RAMP   = 0.8;  // fator de aceleração máxima (80% acima do base)
+
+// Tolerâncias de colisão e timings de transição
+const STOMP_TOLERANCE     = 14;  // px de tolerância para detectar pisada no topo da capivara
+const GAMEOVER_DELAY      = 700; // ms de espera antes de exibir GameOverScene
+const PHASE_TRANS_DELAY   = 600; // ms de espera antes de transição de fase
+const INVINCIBLE_REPEAT   = 10;  // repetições do piscar após levar dano
+const INVINCIBLE_DURATION = 90;  // duração de cada piscar de invencibilidade (ms)
 ```
 
 `LIVES_START` é global de script-tag e é referenciado diretamente em `HUDScene.js`.
@@ -91,6 +105,18 @@ window.GAME_SETTINGS = {
 - Física arcade com `gravity.y = 700`.
 - Scale mode `FIT + CENTER_BOTH` — funciona em desktop e mobile sem código extra.
 - `debug: false` em produção; pode setar `true` para visualizar hitboxes.
+
+---
+
+## High Score (HighScore.js)
+
+```js
+window.HighScore.get()        // Retorna o recorde salvo (int, 0 se nunca jogou)
+window.HighScore.check(score) // Salva se for novo recorde; retorna true/false
+```
+
+Persistência via `localStorage` (chave `'marie-highscore'`).
+Usado em `TitleScene` (exibe recorde), `GameOverScene` e `WinScene` (verifica/exibe novo recorde).
 
 ---
 
@@ -146,8 +172,9 @@ Encosto lateral (loseLife()):
   → comboPoints = 0   (pontos já "bankeados" são mantidos)
 ```
 
-- `combo` começa em 1 (×1 = cinza no HUD; >1 = amarelo).
-- Passagem limpa detectada em `update()`: `capy.x < this.marie.x - 40 && !capy._scored`.
+- `combo` começa em 1; HUD exibe `★N` (N = combo - 1 = acertos seguidos).
+- Cores do combo no HUD: `#aaaaaa` (0), `#ffdd00` (1–2), `#ff9900` (3–5), `#ff4444` (6+).
+- Passagem limpa detectada em `update()`: `capy.x < this.marie.x - 40 && !capy._scored && !capy._stomped && !capy._missed` e Marie deve estar no ar (`!marieOnGround`). Se Marie está no chão, marca `capy._missed = true` (sem pontos, sem nova tentativa).
 
 ---
 
@@ -161,6 +188,19 @@ Encosto lateral (loseLife()):
 | `MusicManager._ac` | `MusicManager.js` | Música de fundo (chiptune) |
 
 **Nunca misturar os dois.** GameScene usa `window.SFX_AUDIO_CONTEXT` via `this._sfx(fn)`.
+
+### SFX disponíveis em GameScene
+
+| Método | Timbre | Quando |
+|---|---|---|
+| `sndJump()` | square, 180→420 Hz | Pulo |
+| `sndStomp()` | square, 320→55 Hz | Pisar em capivara |
+| `sndCleanPass(combo)` | square, notas C5–A5 | Passagem limpa (evolui com combo: quinta em ≥3, oitava em ≥5) |
+| `sndHurt()` | sawtooth, 220→70 Hz | Encostar em capivara (dano) |
+| `sndTick()` | square, 880 Hz | Últimos 10s do timer (dobra nos últimos 5s) |
+| `sndWin()` | square, 4 notas asc. | Transição fase 1 → fase 2 |
+| `sndVictory()` | square, 5 notas asc. | Vitória final (fase 2 concluída) |
+| `sndGameOver()` | sawtooth, 4 notas desc. | Game over |
 
 ### Adicionar um novo SFX em GameScene
 
@@ -243,7 +283,7 @@ onContact(marie, capy) {
     const marieFeet = marie.body.bottom;
     const capyTop   = capy.body.top;
 
-    if (marieFeet <= capyTop + 14 && marie.body.velocity.y > 0) {
+    if (marieFeet <= capyTop + STOMP_TOLERANCE && marie.body.velocity.y > 0) {
         // Pisou (stomped)
     } else {
         // Encostou lateralmente
@@ -252,7 +292,7 @@ onContact(marie, capy) {
 }
 ```
 
-O `+14` é tolerância para compensar diferença de velocidade de frame.
+`STOMP_TOLERANCE` (14px) compensa diferença de velocidade de frame.
 O guard `if (this.dead || this.invincible)` é CRÍTICO — sem ele `triggerGameOver()` é chamado múltiplas vezes.
 
 ---
@@ -374,8 +414,8 @@ Adicionar ao array de scenes em `game.js` e carregar script no `index.html`.
 ```js
 this.invincible = true;
 this.tweens.add({
-    targets: this.marie, alpha: 0.25, duration: 90,
-    yoyo: true, repeat: 10,
+    targets: this.marie, alpha: 0.25, duration: INVINCIBLE_DURATION,
+    yoyo: true, repeat: INVINCIBLE_REPEAT,
     onComplete: () => { this.marie.setAlpha(1); this.invincible = false; }
 });
 ```

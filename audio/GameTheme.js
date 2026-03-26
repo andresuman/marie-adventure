@@ -1,81 +1,85 @@
-// Tardes em Lindóia — Zequinha de Abreu (1930). Domínio público.
-// Transcrição da partitura (pág. 1/3) adaptada para o MusicManager.
-// Valsa em Mi♭ maior, 3/4, ~70 BPM — 24 compassos.
-// Caráter: valsa brasileira nostálgica; tema da cidade de Águas de Lindóia (SP).
+// Tema original composto para "Marie Adventure".
+// Valsa em Fá maior, 3/4, 80 BPM — 24 compassos (A · A' · B).
+// Caráter: nostalgia de salão, à moda das valsas brasileiras dos anos 1920.
+// Obra inédita; qualquer semelhança com composições existentes é mera coincidência
+// de estilo de época, não de melodia ou harmonia.
 (function () {
     const MM = window.MusicManager;
-    const U  = window.MusicUtils;
+    const U = window.MusicUtils;
     if (!MM || !U) return;
 
-    const bpm             = 70;
-    const beatsPerMeasure = 3;   // 3/4 (valsa)
+    const bpm = 80;
+    const beatsPerMeasure = 3; // 3/4
 
-    // ── Melodia (voz superior, clave de sol) ──────────────────────────────────
-    // '4' = semínima (1 tempo) | '2' = mínima (2 tempos) | '2.' = mínima pontuada (3 tempos)
+    // ── Melodia principal ─────────────────────────────────────────────────────
+    // Duração: 4 = semínima (1 tempo) | 2 = mínima (2 tempos) | 2. = mínima pontuada (3 tempos)
     //
-    // Seção A  (c.1–6):   Mi♭ maior; abertura em notas longas e frase descendente
-    // Seção B  (c.7–10):  Fá maior (II grau com terça natural Lá♮); contraste
-    // Seção A' (c.11–14): reexposição em Mi♭
-    // Seção C  (c.15–20): cadência C7→Fm→Si♭→Si♭7; tensão dramática
-    // Coda     (c.21–24): Mi♭→F7→Si♭7→Mi♭; fechamento com loop limpo
+    // Seção A (compassos 1–8): abertura em arpejos e graus conjuntos
+    //   Harmonia: Fá maior → Dó maior (meia cadência no c.8)
+    //
+    // Seção A' (compassos 9–16): variação cantabile
+    //   c.11 traz Mi natural (IVm → sensível para Fá): toque cromático sutil
+    //
+    // Seção B (compassos 17–24): contraste em Sib maior
+    //   c.18 Mib5 (b7 do campo de Sib) e c.19/22 Lá natural (terça picante):
+    //   dois cromatismos característicos dos salões de 1920
     const leadTokens = [
-        // === Seção A ===
-        // c.1  — abertura: G5 sustentada (arpejo Eb na batida 1)
-        ['G5', '2.'],
-        // c.2  — resposta na tônica
-        ['Eb5', '2.'],
-        // c.3  — graus conjuntos ascendentes
-        ['Bb4', '4'], ['C5', '4'], ['D5', '4'],
-        // c.4  — resolução com bordão
-        ['Eb5', '2'], ['D5', '4'],
-        // c.5  — descida expressiva
-        ['C5', '4'], ['Bb4', '4'], ['Ab4', '4'],
-        // c.6  — Fm: repouso na subdominante menor
-        ['G4', '2'], ['Ab4', '4'],
+        // ── Seção A ──────────────────────────────────────────────────────────
+        // c.1  — arpejo ascendente em Fá (abertura clássica de valsa)
+        ['C4','4'], ['F4','4'], ['A4','4'],
+        // c.2  — sobe à 5ª, recua suavemente para Sib
+        ['C5','2'], ['Bb4','4'],
+        // c.3  — descida em graus conjuntos
+        ['A4','4'], ['G4','4'], ['F4','4'],
+        // c.4  — repouso na tônica
+        ['F4','2.'],
 
-        // === Seção B — Fá maior ===
-        // c.7  — Lá♮: terça de Fá maior (cromatismo expressivo)
-        ['C5', '4'], ['Bb4', '4'], ['A4', '4'],
-        // c.8  — descida até a fundamental
-        ['G4', '2'], ['F4', '4'],
-        // c.9  — ascendente de volta ao Si♭
-        ['G4', '4'], ['A4', '4'], ['Bb4', '4'],
-        // c.10 — retorno à tônica Mi♭
-        ['Eb5', '2.'],
+        // c.5  — reabre o arpejo
+        ['C4','4'], ['F4','4'], ['A4','4'],
+        // c.6  — desta vez chega à 6ª (Ré), colorindo mais
+        ['D5','2'], ['C5','4'],
+        // c.7  — descida por Sib–Lá–Sol
+        ['Bb4','4'], ['A4','4'], ['G4','4'],
+        // c.8  — meia cadência em Dó (V)
+        ['C5','2.'],
 
-        // === Seção A' — reexposição ===
-        // c.11
-        ['G5', '2.'],
-        // c.12
-        ['Eb5', '2.'],
-        // c.13
-        ['Bb4', '4'], ['C5', '4'], ['D5', '4'],
-        // c.14 — fecha a reexposição
-        ['Eb5', '2.'],
+        // ── Seção A' ─────────────────────────────────────────────────────────
+        // c.9  — retorno do arpejo
+        ['C4','4'], ['F4','4'], ['A4','4'],
+        // c.10 — Sib na cabeça, Lá no terceiro tempo (ligeiro ornamento)
+        ['Bb4','2'], ['A4','4'],
+        // c.11 — Mi natural: sensível secundária, dá brilho à frase
+        ['G4','4'], ['F4','4'], ['E4','4'],
+        // c.12 — cadência perfeita em Fá
+        ['F4','2.'],
 
-        // === Seção C — C7 → Fm → Si♭ → Si♭7 ===
-        // c.15 — C7: Mi♮ (sensível da dominante de Fm)
-        ['E4', '4'], ['G4', '4'], ['Bb4', '4'],
-        // c.16 — Fm: resolução
-        ['Ab4', '2'], ['G4', '4'],
-        // c.17 — Fm: elaboração ascendente
-        ['F4', '4'], ['G4', '4'], ['Ab4', '4'],
-        // c.18 — Si♭ maior: impulso ascendente
-        ['D5', '2'], ['C5', '4'],
-        // c.19 — Si♭7: tensão pré-cadência
-        ['Bb4', '2'], ['Ab4', '4'],
-        // c.20 — movimento cadencial descendente
-        ['G4', '4'], ['F4', '4'], ['Eb4', '4'],
+        // c.13 — escala ascendente cantabile
+        ['F4','4'], ['G4','4'], ['A4','4'],
+        // c.14 — abre para Sib, retorna a Sol
+        ['Bb4','2'], ['G4','4'],
+        // c.15 — descida espelhada
+        ['A4','4'], ['G4','4'], ['F4','4'],
+        // c.16 — cadência em Fá, fecha a seção
+        ['F4','2.'],
 
-        // === Coda — Mi♭ → F7 → Si♭7 → Mi♭ ===
-        // c.21 — Mi♭: respiração
-        ['Bb4', '2.'],
-        // c.22 — F7: Lá♮ (7ª de dominante)
-        ['C5', '4'], ['A4', '4'], ['G4', '4'],
-        // c.23 — Si♭7: penúltimo acorde
-        ['F4', '2'], ['D4', '4'],
-        // c.24 — Mi♭: repouso final (loop recomeça em G5)
-        ['Eb4', '2.'],
+        // ── Seção B ──────────────────────────────────────────────────────────
+        // c.17 — arpejo de Sib: contraste de cor harmônica
+        ['F4','4'], ['Bb4','4'], ['D5','4'],
+        // c.18 — Mib5: colorismo típico dos anos 1920 (b7 sobre Sib)
+        ['Eb5','2'], ['D5','4'],
+        // c.19 — Lá natural sobre campo de Sib: tensão cromática expressiva
+        ['C5','4'], ['Bb4','4'], ['A4','4'],
+        // c.20 — resolução em Sib
+        ['Bb4','2.'],
+
+        // c.21 — descida melódica de Ré
+        ['D5','4'], ['C5','4'], ['Bb4','4'],
+        // c.22 — bordão: Lá natural + Sib (suspiro cromático)
+        ['A4','2'], ['Bb4','4'],
+        // c.23 — prepara a cadência final
+        ['C5','4'], ['Bb4','4'], ['G4','4'],
+        // c.24 — repouso final em Fá
+        ['F4','2.'],
     ];
 
     const lead = [];
@@ -86,45 +90,42 @@
         beat += beats;
     }
 
-    const measures   = Math.ceil(beat / beatsPerMeasure);
+    // Arredonda para compassos completos (garantia de loop limpo)
+    const measures = Math.ceil(beat / beatsPerMeasure);
     const totalBeats = measures * beatsPerMeasure;
 
-    // ── Acompanhamento oom-pah-pah ─────────────────────────────────────────────
-    // Cada linha: [baixo_batida1, acorde_batida2, acorde_batida3]
-    const accompaniment = [
-        ['Eb2', 'G3',  'Bb3'],  // c.1  Mi♭ maior
-        ['Eb2', 'G3',  'Bb3'],  // c.2
-        ['Eb2', 'G3',  'Bb3'],  // c.3
-        ['Eb2', 'G3',  'Bb3'],  // c.4
-        ['Eb2', 'G3',  'Bb3'],  // c.5
-        ['F2',  'Ab3', 'C4' ],  // c.6  Fm
-        ['F2',  'A3',  'C4' ],  // c.7  Fá maior (A♮)
-        ['F2',  'A3',  'C4' ],  // c.8
-        ['F2',  'A3',  'C4' ],  // c.9
-        ['Eb2', 'G3',  'Bb3'],  // c.10 Mi♭
-        ['Eb2', 'G3',  'Bb3'],  // c.11
-        ['Eb2', 'G3',  'Bb3'],  // c.12
-        ['Eb2', 'G3',  'Bb3'],  // c.13
-        ['Eb2', 'G3',  'Bb3'],  // c.14
-        ['C2',  'E3',  'G3' ],  // c.15 Dó7 (E♮)
-        ['F2',  'Ab3', 'C4' ],  // c.16 Fm
-        ['F2',  'Ab3', 'C4' ],  // c.17 Fm
-        ['Bb2', 'D3',  'F3' ],  // c.18 Si♭
-        ['Bb2', 'D3',  'Ab3'],  // c.19 Si♭7
-        ['Bb2', 'D3',  'Ab3'],  // c.20 Si♭7
-        ['Eb2', 'G3',  'Bb3'],  // c.21 Mi♭
-        ['F2',  'A3',  'C4' ],  // c.22 F7 (A♮)
-        ['Bb2', 'D3',  'Ab3'],  // c.23 Si♭7
-        ['Eb2', 'G3',  'Bb3'],  // c.24 Mi♭ final
+    // ── Acompanhamento oom-pah-pah ────────────────────────────────────────────
+    // Um acorde por compasso; harmonia segue o contorno melódico.
+    const roots = [
+        'F2', 'F2',   // c.1–2   Fá maior
+        'F2', 'C2',   // c.3–4   Fá → Dó
+        'F2', 'F2',   // c.5–6   Fá maior
+        'C2', 'C2',   // c.7–8   Dó maior (meia cadência)
+        'F2', 'F2',   // c.9–10  Fá maior
+        'D2', 'F2',   // c.11–12 Ré menor → Fá (cadência perfeita)
+        'F2', 'Bb2',  // c.13–14 Fá → Sib
+        'C2', 'F2',   // c.15–16 Dó → Fá
+        'Bb2','Bb2',  // c.17–18 Sib maior
+        'Bb2','Bb2',  // c.19–20 Sib maior
+        'Bb2','C2',   // c.21–22 Sib → Dó
+        'C2', 'F2',   // c.23–24 Dó → Fá (cadência final)
     ];
 
+    const chords = {
+        F2:  ['A3', 'C4'],   // Fá maior
+        C2:  ['E3', 'G3'],   // Dó maior (V)
+        D2:  ['F3', 'A3'],   // Ré menor (ii)
+        Bb2: ['D3', 'F3'],   // Sib maior (IV)
+    };
+
     const bass = [];
-    for (let m = 0; m < accompaniment.length; m++) {
-        const [root, ch1, ch2] = accompaniment[m];
+    for (let m = 0; m < Math.min(measures, roots.length); m++) {
+        const root = roots[m];
+        const chord = chords[root] || [];
         const mStart = m * beatsPerMeasure;
-        bass.push({ note: root, startBeat: mStart,     beats: 1 });
-        bass.push({ note: ch1,  startBeat: mStart + 1, beats: 1 });
-        bass.push({ note: ch2,  startBeat: mStart + 2, beats: 1 });
+        bass.push({ note: root, startBeat: mStart + 0, beats: 1 });
+        chord.forEach(n => bass.push({ note: n, startBeat: mStart + 1, beats: 1 }));
+        chord.forEach(n => bass.push({ note: n, startBeat: mStart + 2, beats: 1 }));
     }
 
     MM.registerSong('game-theme', {
@@ -132,9 +133,9 @@
         totalBeats,
         lead,
         bass,
-        leadWave: 'triangle',
+        leadWave: 'square',
         bassWave: 'triangle',
-        leadAmp:  0.10,
-        bassAmp:  0.050,
+        leadAmp: 0.10,
+        bassAmp: 0.055,
     });
 })();

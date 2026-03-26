@@ -23,6 +23,7 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 - Nos últimos 10 segundos o cronômetro fica vermelho e um bip soa a cada segundo.
 - O jogo tem **5 vidas**; o jogo termina ao perdê-las todas ou ao esgotar o tempo.
 - Vidas e pontuação acumuladas na fase 1 **são mantidas** na fase 2; somente o combo é zerado.
+- O **recorde** é salvo automaticamente no navegador (localStorage).
 
 ## Áudio
 
@@ -57,17 +58,18 @@ http://localhost:8000
 marie-adventure/
 ├── index.html              # Ponto de entrada
 ├── game.js                 # Configuração do Phaser e GAME_SETTINGS
+├── HighScore.js            # Persistência de recorde (localStorage)
 ├── scenes/
 │   ├── BootScene.js        # Carregamento de assets e animações
-│   ├── TitleScene.js       # Tela inicial
+│   ├── TitleScene.js       # Tela inicial e toggle de música
 │   ├── GameScene.js        # Loop principal do jogo
-│   ├── HUDScene.js         # Pontos, vidas e tempo
+│   ├── HUDScene.js         # Pontos, vidas, tempo e combo
 │   ├── GameOverScene.js    # Tela de fim de jogo
 │   └── WinScene.js         # Tela de vitória
 ├── audio/
 │   ├── AudioUnlock.js      # Desbloqueio da Web Audio API no mobile
 │   ├── MusicManager.js     # Motor de música chiptune (WebAudio puro)
-│   └── GameTheme.js        # Melodia da fase
+│   └── GameTheme.js        # Melodia da fase (valsa chiptune)
 ├── assets/                 # Sprites e cenário (PNG)
 └── docs/                   # Referências visuais e spritesheets originais
 ```
