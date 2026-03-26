@@ -68,7 +68,7 @@ class GameOverScene extends Phaser.Scene {
         btn.on('pointerdown',  () => this.scene.start('GameScene', { level: 1 }));
 
         // Crédito do desenvolvedor
-        txt(W/2, 228, 'Desenvolvido por Andre Suman  |  @andresuman', {
+        txt(W/2, 252, 'Desenvolvido por Andre Suman  |  @andresuman', {
             fontSize: '11px',
             color: '#cccccc',
             stroke: '#000000',
