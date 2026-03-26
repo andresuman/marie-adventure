@@ -32,7 +32,7 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        txt(W/2, 100, `PONTUAÇÃO   ${String(this.finalScore).padStart(5, '0')}`, {
+        txt(W/2, 105, `PONTUAÇÃO   ${String(this.finalScore).padStart(5, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
             stroke: '#000000',
@@ -40,7 +40,7 @@ class WinScene extends Phaser.Scene {
         });
 
         if (this.isNewRecord) {
-            txt(W/2, 125, '★  NOVO RECORDE!  ★', {
+            txt(W/2, 130, '★  NOVO RECORDE!  ★', {
                 fontSize: '13px',
                 color: '#ffdd00',
                 stroke: '#000000',
@@ -48,7 +48,7 @@ class WinScene extends Phaser.Scene {
             });
         } else {
             const hs = window.HighScore ? window.HighScore.get() : 0;
-            txt(W/2, 125, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+            txt(W/2, 130, `RECORDE   ${String(hs).padStart(5, '0')}`, {
                 fontSize: '12px',
                 color: '#aaaaaa',
                 stroke: '#000000',
@@ -57,7 +57,7 @@ class WinScene extends Phaser.Scene {
         }
 
         // Crédito comemorativo (linha única)
-        txt(W/2, 155, '100 anos da visita de Marie Curie  •  Águas de Lindóia  •  1926 – 2026', {
+        txt(W/2, 158, '100 anos da visita de Marie Curie  •  Águas de Lindóia  •  1926 – 2026', {
             fontSize: '9px',
             color: '#66ccff',
             stroke: '#000000',

@@ -36,7 +36,7 @@ class TitleScene extends Phaser.Scene {
 
         // Título
         txt(W/2, 28, 'A AVENTURA DE MARIE CURIE', {
-            fontSize: '22px',
+            fontSize: '26px',
             color: '#ffe040',
             stroke: '#000000',
             strokeThickness: 6
