@@ -2,9 +2,10 @@ class WinScene extends Phaser.Scene {
     constructor() { super({ key: 'WinScene' }); }
 
     init(data) {
-        this.finalScore = data.score || 0;
-        this.finalTime  = data.time  || 0;
-        this.finalLevel = data.level || 2;
+        this.finalScore  = data.score || 0;
+        this.finalTime   = data.time  || 0;
+        this.finalLevel  = data.level || 2;
+        this.isNewRecord = window.HighScore ? window.HighScore.check(this.finalScore) : false;
     }
 
     create() {
@@ -38,21 +39,38 @@ class WinScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
+        const hs = window.HighScore ? window.HighScore.get() : 0;
+        txt(W/2, 120, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+            fontSize: '12px',
+            color: '#44ff88',
+            stroke: '#000000',
+            strokeThickness: 3
+        });
+
+        if (this.isNewRecord) {
+            txt(W/2, 140, '★  NOVO RECORDE!  ★', {
+                fontSize: '13px',
+                color: '#ffdd00',
+                stroke: '#000000',
+                strokeThickness: 4
+            });
+        }
+
         // Crédito comemorativo
-        txt(W/2, 138, '100 anos da visita de Marie Curie', {
+        txt(W/2, 158, '100 anos da visita de Marie Curie', {
             fontSize: '11px',
             color: '#66ccff',
             stroke: '#000000',
             strokeThickness: 3
         });
-        txt(W/2, 153, 'Águas de Lindóia  •  1926 – 2026', {
+        txt(W/2, 173, 'Águas de Lindóia  •  1926 – 2026', {
             fontSize: '11px',
             color: '#66ccff',
             stroke: '#000000',
             strokeThickness: 3
         });
 
-        const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
+        const btn = txt(W/2, 200, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
