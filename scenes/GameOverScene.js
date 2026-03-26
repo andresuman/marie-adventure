@@ -18,7 +18,7 @@ class GameOverScene extends Phaser.Scene {
 
         txt(W/2, 30, 'FIM DE JOGO', {
             fontSize: '28px',
-            color: '#ffe040',
+            color: '#ff4444',
             stroke: '#000000',
             strokeThickness: 6
         });
@@ -30,31 +30,31 @@ class GameOverScene extends Phaser.Scene {
             strokeThickness: 4
         });
 
-        txt(W/2, 110, `PONTUAÇÃO   ${String(this.finalScore).padStart(5, '0')}`, {
+        txt(W/2, 105, `PONTUAÇÃO   ${String(this.finalScore).padStart(5, '0')}`, {
             fontSize: '14px',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 4
         });
 
-        const hs = window.HighScore ? window.HighScore.get() : 0;
-        txt(W/2, 135, `RECORDE   ${String(hs).padStart(5, '0')}`, {
-            fontSize: '12px',
-            color: '#44ff88',
-            stroke: '#000000',
-            strokeThickness: 3
-        });
-
         if (this.isNewRecord) {
-            txt(W/2, 157, '★  NOVO RECORDE!  ★', {
+            txt(W/2, 130, '★  NOVO RECORDE!  ★', {
                 fontSize: '13px',
                 color: '#ffdd00',
                 stroke: '#000000',
                 strokeThickness: 4
             });
+        } else {
+            const hs = window.HighScore ? window.HighScore.get() : 0;
+            txt(W/2, 130, `RECORDE   ${String(hs).padStart(5, '0')}`, {
+                fontSize: '12px',
+                color: '#aaaaaa',
+                stroke: '#000000',
+                strokeThickness: 3
+            });
         }
 
-        const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
+        const btn = txt(W/2, 175, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
