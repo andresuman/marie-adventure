@@ -39,6 +39,8 @@ class GameScene extends Phaser.Scene {
         this.invincible  = false;
         this.combo       = 1;   // multiplicador de passagem limpa
         this.comboPoints = 0;   // pontos acumulados na sequência atual (devolvidos se pisar)
+        this._quizActive = false; // impede abrir dois quizzes simultâneos
+        this._quizQueue  = [];    // fila de perguntas sorteadas para a fase atual
     }
 
     create() {
@@ -81,6 +83,11 @@ class GameScene extends Phaser.Scene {
         this.marie.body.setSize(192 * 0.55, 302 * 0.80);
         this.marie.body.setOffset(192 * 0.22, 302 * 0.10);
 
+        // ── Frascos coletáveis do quiz ────────────────────────────────────────
+        this._sortearQuiz();
+        this.collectibles = this.physics.add.group();
+        this._spawnCollectibles();
+
         // ── Colisões ─────────────────────────────────────────────────────────
         this.physics.add.collider(this.marie,    this.ground);
         this.physics.add.collider(this.capybaras, this.ground);
@@ -88,6 +95,8 @@ class GameScene extends Phaser.Scene {
             this.onContact, null, this);
         this.physics.add.overlap(this.marie, this.bottle,
             this.onReachBottle, null, this);
+        this.physics.add.overlap(this.marie, this.collectibles,
+            this._onCollect, null, this);
 
         // ── Câmera ───────────────────────────────────────────────────────────
         this.cameras.main.setBounds(0, 0, this._levelWidth, H);
@@ -178,6 +187,81 @@ class GameScene extends Phaser.Scene {
 
         // ── Caiu no buraco ────────────────────────────────────────────────────
         if (this.marie.y > this.scale.height + 60) this.loseLife();
+    }
+
+    // ── Sorteio de 3 perguntas aleatórias do banco da fase atual ─────────────
+    _sortearQuiz() {
+        const dados = this.cache.json.get('quiz');
+        if (!dados) { this._quizQueue = []; return; }
+        const banco = dados[this.level === 1 ? 'fase1' : 'fase2'] || [];
+        this._quizQueue = Phaser.Utils.Array.Shuffle([...banco]).slice(0, 3);
+    }
+
+    // ── Frascos coletáveis (flutuam no ar — jogador pula para pegar) ─────────
+    _spawnCollectibles() {
+        if (this._quizQueue.length === 0) return;
+
+        const posX = this.level === 1
+            ? [380, 970, 1560]
+            : [560, 1480, 2600];
+
+        // Y=170: ~78px acima do chão, dentro do alcance do pulo (máx ~138px)
+        const ITEM_Y = 170;
+
+        posX.forEach((pX, i) => {
+            if (i >= this._quizQueue.length) return;
+
+            const item = this.collectibles.create(pX, ITEM_Y, 'vial')
+                .setDepth(8)
+                .setScale(2);
+            item.body.allowGravity = false;
+            item.body.immovable    = true;
+
+            // Flutuação suave (Y) com delay para não sincronizar os três
+            this.tweens.add({
+                targets: item, y: ITEM_Y - 6,
+                duration: 820 + i * 130,
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+            });
+
+            // Brilho pulsante (alpha)
+            this.tweens.add({
+                targets: item, alpha: 0.60,
+                duration: 510 + i * 90,
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+            });
+        });
+    }
+
+    // ── Coleta do frasco — pausa jogo e abre o quiz como overlay ─────────────
+    _onCollect(marie, item) {
+        if (this._quizActive || this.dead) return;
+        if (this._quizQueue.length === 0) return;
+
+        this._quizActive = true;
+        const pergunta = this._quizQueue.shift(); // consome a próxima pergunta da fila
+
+        item.destroy();
+        this.sndCollect();
+
+        // Escuta o resultado (uma só vez), limpa capivaras e aplica a recompensa
+        this.events.once('quiz-resolvido', ({ acertou }) => {
+            this._quizActive = false;
+            // Remove todas as capivaras da tela: evita colisão surpresa ao retornar
+            this.capybaras.clear(true, true);
+            if (acertou) {
+                this.score    += 500;
+                this.gameTime  = Math.min(this.gameTime + 5, 99);
+                this.events.emit('scoreChanged', this.score);
+                this.events.emit('timeChanged',  this.gameTime);
+                this._floatText('+500', this.marie.x, this.marie.y - 40, '#44ff88');
+                this._floatText('+5s',  this.marie.x + 30, this.marie.y - 58, '#66ccff');
+            }
+        });
+
+        // Pausa a GameScene e lança o quiz como cena overlay
+        this.scene.pause();
+        this.scene.launch('QuizScene', { ...pergunta, gameScene: this });
     }
 
     // ── Chão ─────────────────────────────────────────────────────────────────
@@ -497,6 +581,21 @@ class GameScene extends Phaser.Scene {
                 g.gain.setValueAtTime(0.13, ac.currentTime + d);
                 g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.22);
                 o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.25);
+            });
+        });
+    }
+
+    sndCollect() {
+        // Arpejo curto ascendente — "item coletado"
+        this._sfx(ac => {
+            [[784, 0], [988, 0.07], [1319, 0.14]].forEach(([f, d]) => {
+                const o = ac.createOscillator(), g = ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type = 'square';
+                o.frequency.setValueAtTime(f, ac.currentTime + d);
+                g.gain.setValueAtTime(0.13, ac.currentTime + d);
+                g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d + 0.10);
+                o.start(ac.currentTime + d); o.stop(ac.currentTime + d + 0.11);
             });
         });
     }

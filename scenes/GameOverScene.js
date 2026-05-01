@@ -4,6 +4,8 @@ class GameOverScene extends Phaser.Scene {
     init(data) {
         this.finalScore  = data.score || 0;
         this.isNewRecord = window.HighScore ? window.HighScore.check(this.finalScore) : false;
+        this.quizTotal   = window.QuizStats ? window.QuizStats.getTotal()   : 0;
+        this.quizAcertos = window.QuizStats ? window.QuizStats.getAcertos() : 0;
     }
 
     create() {
@@ -49,6 +51,16 @@ class GameOverScene extends Phaser.Scene {
             txt(W/2, 130, `RECORDE   ${String(hs).padStart(5, '0')}`, {
                 fontSize: '12px',
                 color: '#aaaaaa',
+                stroke: '#000000',
+                strokeThickness: 3
+            });
+        }
+
+        if (this.quizTotal > 0) {
+            const quizInfo = `Curiosidades: ${this.quizAcertos}/${this.quizTotal} corretas`;
+            txt(W/2, 155, quizInfo, {
+                fontSize: '11px',
+                color: '#66ccff',
                 stroke: '#000000',
                 strokeThickness: 3
             });
