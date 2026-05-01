@@ -90,15 +90,19 @@ class QuizScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(2).setVisible(false);
 
         // ── Botão CONTINUAR (oculto até responder) ────────────────────────────
-        this._continuarBtn = txt(W/2, 234, '  CONTINUAR  ', {
-            fontSize: '13px', color: '#111111',
+        this._continuarBtn = txt(W/2, 234, '▶  CONTINUAR', {
+            fontSize: '14px', color: '#111111',
+            stroke: '#000000',
+            strokeThickness: 1,
             backgroundColor: '#ffe040',
-            padding: { x: 14, y: 6 },
+            padding: { x: 18, y: 8 },
         }).setInteractive({ useHandCursor: true }).setVisible(false);
 
         this._continuarBtn.on('pointerover', () => this._continuarBtn.setBackgroundColor('#ffffff'));
         this._continuarBtn.on('pointerout',  () => this._continuarBtn.setBackgroundColor('#ffe040'));
         this._continuarBtn.on('pointerdown', () => this._fechar());
+
+        this.tweens.add({ targets: this._continuarBtn, alpha: 0.5, duration: 550, yoyo: true, repeat: -1 });
 
         // ── Suporte a teclado ─────────────────────────────────────────────────
         this.input.keyboard.addCapture([
@@ -234,9 +238,11 @@ class QuizScene extends Phaser.Scene {
     // ── Fecha o quiz e retoma o jogo ──────────────────────────────────────────
     _fechar() {
         const gs = this.gameScene;
-        this.scene.resume('GameScene');  // retoma GameScene antes de parar
-        this.scene.stop();               // para esta cena
+        // Resolve/reposiciona enquanto a GameScene ainda está pausada; assim a
+        // física não retoma por um frame com a velocidade do pulo congelado.
         gs.events.emit('quiz-resolvido', { acertou: this._acertou });
+        this.scene.resume('GameScene');
+        this.scene.stop();
     }
 
     // ── SFX inline (usa o mesmo AudioContext dos SFX do jogo) ─────────────────

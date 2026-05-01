@@ -79,9 +79,9 @@ class TitleScene extends Phaser.Scene {
             fontSize: '16px',
             color: '#111111',
             stroke: '#000000',
-            strokeThickness: 2,
+            strokeThickness: 1,
             backgroundColor: '#ffe040',
-            padding: { x: 22, y: 9 }
+            padding: { x: 24, y: 10 }
         }).setInteractive({ useHandCursor: true });
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));

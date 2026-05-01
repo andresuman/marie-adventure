@@ -58,9 +58,9 @@ class GameOverScene extends Phaser.Scene {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
-            strokeThickness: 2,
+            strokeThickness: 1,
             backgroundColor: '#ffe040',
-            padding: { x: 16, y: 8 }
+            padding: { x: 18, y: 9 }
         }).setInteractive({ useHandCursor: true });
 
         btn.on('pointerover',  () => btn.setBackgroundColor('#ffffff'));

@@ -246,6 +246,10 @@ class GameScene extends Phaser.Scene {
 
         this._playerJumping = false;
         this._quizActive = true;
+        this._quizReturnPosition = {
+            x: Phaser.Math.Clamp(item.x, 32, this._levelWidth - 32),
+            y: GROUND_Y - 80,
+        };
         const pergunta = this._quizQueue.shift(); // consome a próxima pergunta da fila
 
         item.destroy();
@@ -255,6 +259,7 @@ class GameScene extends Phaser.Scene {
         this.events.once('quiz-resolvido', ({ acertou }) => {
             this._quizActive = false;
             this.capybaras.clear(true, true);
+            this._returnMarieFromQuiz();
             if (acertou) {
                 this.score += 500;
                 this.events.emit('scoreChanged', this.score);
@@ -265,6 +270,24 @@ class GameScene extends Phaser.Scene {
         // Pausa a GameScene e lança o quiz como cena overlay
         this.scene.pause();
         this.scene.launch('QuizScene', { ...pergunta, gameScene: this });
+    }
+
+    // ── Retorno do quiz: evita retomar no meio do pulo congelado ─────────────
+    _returnMarieFromQuiz() {
+        if (!this._quizReturnPosition) return;
+
+        const x = Phaser.Math.Clamp(this._quizReturnPosition.x, 32, this._levelWidth - 32);
+        const y = this._quizReturnPosition.y;
+
+        this._playerJumping = false;
+        this.marie.setPosition(x, y);
+
+        if (this.marie.body && this.marie.body.reset) {
+            this.marie.body.reset(x, y);
+        }
+
+        this.marie.setVelocity(0, 0);
+        this._quizReturnPosition = null;
     }
 
     // ── Chão ─────────────────────────────────────────────────────────────────
