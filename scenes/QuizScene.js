@@ -187,9 +187,6 @@ class QuizScene extends Phaser.Scene {
         this.respondeu = true;
         this._acertou  = indice === this.correta;
 
-        // Atualiza estatísticas de lifetime
-        window.QuizStats && window.QuizStats.registrar(this._acertou);
-
         // Feedback visual nos botões
         this._btns.forEach((btn, i) => {
             btn.zone.disableInteractive();

@@ -37,7 +37,6 @@ marie-adventure/
 ├── index.html              # Entrada; carrega scripts com ?v=YYYYMMDD
 ├── game.js                 # Config Phaser (480×270) + window.GAME_SETTINGS
 ├── HighScore.js            # Persistência de recorde em localStorage (window.HighScore)
-├── QuizStats.js            # Persistência de acertos/tentativas do desafio de perguntas (window.QuizStats)
 ├── data/
 │   └── quiz.json           # Banco de perguntas por fase (fase1/fase2)
 ├── scenes/
@@ -123,24 +122,6 @@ window.HighScore.check(score) // Salva se for novo recorde; retorna true/false
 
 Persistência via `localStorage` (chave `'marie-highscore'`).
 Usado em `TitleScene` (exibe recorde), `GameOverScene` e `WinScene` (verifica/exibe novo recorde).
-
----
-
-## Estatísticas do desafio de perguntas (QuizStats.js)
-
-```js
-window.QuizStats.getTotal()        // Total lifetime de perguntas respondidas
-window.QuizStats.getAcertos()      // Total lifetime de respostas corretas
-window.QuizStats.registrar(true)   // Incrementa total e acertos
-window.QuizStats.registrar(false)  // Incrementa apenas total
-```
-
-Persistência via `localStorage`:
-- `'marie-quiz-total'`
-- `'marie-quiz-acertos'`
-
-Usado em `QuizScene._responder()` para registrar cada resposta e em `GameOverScene`/`WinScene` para exibir `Curiosidades: X/Y corretas`.
-Essas estatísticas são acumuladas entre partidas, assim como o recorde.
 
 ---
 
@@ -318,7 +299,6 @@ Feedback:
 - Correto: botão correto verde, texto `✔  CORRETO!`, SFX `_sndCorrect()`.
 - Errado: botão escolhido vermelho, correto verde, texto com a resposta correta, SFX `_sndWrong()`.
 - A explicação histórica sempre é exibida antes de continuar.
-- `window.QuizStats.registrar(this._acertou)` é chamado exatamente uma vez por resposta.
 
 ---
 

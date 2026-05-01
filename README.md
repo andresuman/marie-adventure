@@ -29,7 +29,6 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 - O jogo tem **5 vidas**; o jogo termina ao perdê-las todas ou ao esgotar o tempo.
 - Vidas e pontuação acumuladas na fase 1 **são mantidas** na fase 2; somente o combo é zerado.
 - O **recorde** é salvo automaticamente no navegador (localStorage).
-- O desempenho no desafio de perguntas também é salvo no navegador e aparece no fim da partida como **Curiosidades: acertos/tentativas**.
 
 ## Desafio de perguntas educativo
 
@@ -87,7 +86,6 @@ marie-adventure/
 ├── index.html              # Ponto de entrada
 ├── game.js                 # Configuração do Phaser e GAME_SETTINGS
 ├── HighScore.js            # Persistência de recorde (localStorage)
-├── QuizStats.js            # Persistência de acertos/tentativas do desafio de perguntas (localStorage)
 ├── data/
 │   └── quiz.json           # Banco de perguntas por fase
 ├── scenes/
