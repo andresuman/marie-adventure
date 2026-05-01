@@ -197,7 +197,7 @@ class QuizScene extends Phaser.Scene {
 
         // Feedback textual
         if (this._acertou) {
-            this._feedbackTxt.setText('✔  CORRETO!').setColor('#004400');
+            this._feedbackTxt.setText('✔  CORRETO!  +500 pontos!').setColor('#004400');
             this._sndCorrect();
         } else {
             this._feedbackTxt.setText(`✘  QUASE!\nResposta correta: ${this.alternativas[this.correta]}`).setColor('#662200');

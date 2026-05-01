@@ -252,7 +252,7 @@ Formato obrigatório:
 - `fase1`: perguntas sobre Marie Curie, visita de 1926 e Thermas de Lindoya.
 - `fase2`: perguntas sobre Águas de Lindóia, legado histórico e contexto de 2026.
 - `correta` é índice zero-based (`0`, `1` ou `2`).
-- Manter exatamente 3 alternativas por pergunta: `QuizScene` posiciona 3 botões fixos (`btnYs = [112, 154, 196]`).
+- Manter exatamente 3 alternativas por pergunta: `QuizScene` posiciona 3 botões fixos (`btnYs = [100, 150, 200]`).
 
 ### Sorteio e blocos em GameScene
 
@@ -308,7 +308,7 @@ Controles:
 - Após responder, `Enter` ou `Espaço` também fecham o quiz.
 
 Feedback:
-- Correto: botão correto verde, texto `✔  CORRETO! +500 pontos!`, SFX `_sndCorrect()`.
+- Correto: botão correto verde, texto `✔  CORRETO!  +500 pontos!`, SFX `_sndCorrect()`.
 - Errado: botão escolhido vermelho, correto verde, texto com a resposta correta, SFX `_sndWrong()`.
 - A explicação histórica sempre é exibida antes de continuar.
 - `window.QuizStats.registrar(this._acertou)` é chamado exatamente uma vez por resposta.

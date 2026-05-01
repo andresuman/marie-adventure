@@ -3,8 +3,6 @@ class WinScene extends Phaser.Scene {
 
     init(data) {
         this.finalScore  = data.score || 0;
-        this.finalTime   = data.time  || 0;
-        this.finalLevel  = data.level || 2;
         this.isNewRecord = window.HighScore ? window.HighScore.check(this.finalScore) : false;
     }
 
@@ -56,7 +54,16 @@ class WinScene extends Phaser.Scene {
             });
         }
 
-        const btn = txt(W/2, 185, '▶  JOGAR NOVAMENTE', {
+        const quizAcertos = window.QuizStats ? window.QuizStats.getAcertos() : 0;
+        const quizTotal   = window.QuizStats ? window.QuizStats.getTotal()   : 0;
+        txt(W/2, 154, `CURIOSIDADES   ${quizAcertos}/${quizTotal} CORRETAS`, {
+            fontSize: '11px',
+            color: '#66ccff',
+            stroke: '#000000',
+            strokeThickness: 3
+        });
+
+        const btn = txt(W/2, 195, '▶  JOGAR NOVAMENTE', {
             fontSize: '14px',
             color: '#111111',
             stroke: '#000000',
