@@ -14,7 +14,7 @@ class QuizScene extends Phaser.Scene {
         this.gameScene    = data.gameScene;
         this.respondeu    = false;
         this._acertou     = false;
-        this._selectedIndex = 0;
+        this._selectedIndex = null;
     }
 
     _montarAlternativasEmbaralhadas(respostaCorreta, respostasErradas) {
@@ -100,8 +100,6 @@ class QuizScene extends Phaser.Scene {
         this._continuarBtn.on('pointerout',  () => this._continuarBtn.setBackgroundColor('#ffe040'));
         this._continuarBtn.on('pointerdown', () => this._fechar());
 
-        this._selectAnswer(0);
-
         // ── Suporte a teclado ─────────────────────────────────────────────────
         this.input.keyboard.addCapture([
             Phaser.Input.Keyboard.KeyCodes.UP,
@@ -119,13 +117,19 @@ class QuizScene extends Phaser.Scene {
 
             if (this._isKey(e, 'ArrowUp', 'ArrowUp', 38)) {
                 e.preventDefault();
-                this._selectAnswer(this._selectedIndex - 1);
+                const nextIndex = this._selectedIndex === null
+                    ? this._btns.length - 1
+                    : this._selectedIndex - 1;
+                this._selectAnswer(nextIndex);
             } else if (this._isKey(e, 'ArrowDown', 'ArrowDown', 40)) {
                 e.preventDefault();
-                this._selectAnswer(this._selectedIndex + 1);
+                const nextIndex = this._selectedIndex === null
+                    ? 0
+                    : this._selectedIndex + 1;
+                this._selectAnswer(nextIndex);
             } else if (this._isKey(e, 'Enter', 'Enter', 13) || this._isKey(e, ' ', 'Space', 32)) {
                 e.preventDefault();
-                this._responder(this._selectedIndex);
+                if (this._selectedIndex !== null) this._responder(this._selectedIndex);
             } else if (this._isKey(e, 'Escape', 'Escape', 27)) {
                 e.preventDefault();
                 this._responder(-1);
