@@ -9,17 +9,21 @@ class QuizScene extends Phaser.Scene {
         this.gameScene    = data.gameScene;
         this.respondeu    = false;
         this._acertou     = false;
+        this._selectedIndex = 0;
     }
 
     create() {
         const W = this.scale.width;   // 480
         const H = this.scale.height;  // 270
+        const BODY_FONT = 'Arial, Verdana, sans-serif';
+        const UI_FONT   = 'monospace';
 
         // ── Overlay escurecido ────────────────────────────────────────────────
-        this.add.rectangle(W/2, H/2, W, H, 0x000000, 0.82).setDepth(0);
+        this.add.rectangle(W/2, H/2, W, H, 0x000000, 0.88).setDepth(0);
 
         // ── Painel pergaminho ─────────────────────────────────────────────────
-        const px = 18, py = 10, pw = W - 36, ph = H - 20;
+        // Margens menores para privilegiar leitura/toque em telas pequenas.
+        const px = 8, py = 6, pw = W - 16, ph = H - 12;
         const panel = this.add.graphics().setDepth(1);
         panel.fillStyle(0xf2e4c0, 1);
         panel.fillRoundedRect(px, py, pw, ph, 8);
@@ -30,60 +34,87 @@ class QuizScene extends Phaser.Scene {
         panel.strokeRoundedRect(px + 4, py + 4, pw - 8, ph - 8, 6);
 
         const txt = (x, y, str, style) =>
-            this.add.text(x, y, str, { fontFamily: 'monospace', resolution: 3, ...style })
+            this.add.text(x, y, str, { fontFamily: UI_FONT, resolution: 3, ...style })
                 .setOrigin(0.5).setDepth(2);
 
-        // ── Rótulo do painel ──────────────────────────────────────────────────
-        txt(W/2, py + 13, '★  CURIOSIDADE HISTÓRICA  ★', {
-            fontSize: '8px', color: '#f5e4c0',
-            backgroundColor: '#7a3e00',
-            padding: { x: 8, y: 3 },
-        });
-
         // ── Pergunta ──────────────────────────────────────────────────────────
-        this.add.text(W/2, py + 42, this.pergunta, {
-            fontFamily: 'monospace', fontSize: '9px', color: '#2c1204',
-            wordWrap: { width: pw - 24 }, align: 'center', resolution: 3,
+        this._questionTxt = this.add.text(W/2, py + 36, this.pergunta, {
+            fontFamily: BODY_FONT, fontSize: '13px', color: '#111111',
+            wordWrap: { width: pw - 30 }, align: 'center', resolution: 3,
+            lineSpacing: 3,
         }).setOrigin(0.5).setDepth(2);
 
         // ── Botões das alternativas ───────────────────────────────────────────
         this._btns = [];
-        const btnW = pw - 30, btnH = 22;
-        const btnYs = [107, 133, 159];
+        const btnW = pw - 30, btnH = 40;
+        const btnYs = [100, 150, 200];
 
         this.alternativas.forEach((alt, i) => {
             this._btns.push(this._makeBtn(W/2, btnYs[i], btnW, btnH, `${i + 1}.  ${alt}`, i));
         });
 
-        // ── Área de feedback (oculta até responder) ───────────────────────────
-        this._feedbackTxt = txt(W/2, 188, '', { fontSize: '9px', color: '#004400' });
+        this._instructionTxt = null;
 
-        this._explicacaoTxt = this.add.text(W/2, 206, '', {
-            fontFamily: 'monospace', fontSize: '7px', color: '#3a1a00',
-            wordWrap: { width: pw - 24 }, align: 'center', resolution: 3,
-        }).setOrigin(0.5).setDepth(2);
+        // ── Área de feedback (oculta até responder) ───────────────────────────
+        this._feedbackTxt = this.add.text(W/2, 48, '', {
+            fontFamily: UI_FONT, fontSize: '13px', color: '#004400',
+            resolution: 3, align: 'center', wordWrap: { width: pw - 34 },
+        }).setOrigin(0.5).setDepth(2).setVisible(false);
+
+        this._explicacaoTxt = this.add.text(W/2, 132, '', {
+            fontFamily: BODY_FONT, fontSize: '13px', color: '#111111',
+            wordWrap: { width: pw - 34 }, align: 'center', resolution: 3,
+            lineSpacing: 4,
+        }).setOrigin(0.5).setDepth(2).setVisible(false);
 
         // ── Botão CONTINUAR (oculto até responder) ────────────────────────────
-        this._continuarBtn = txt(W/2, 248, '  CONTINUAR  ', {
-            fontSize: '11px', color: '#111111',
+        this._continuarBtn = txt(W/2, 234, '  CONTINUAR  ', {
+            fontSize: '13px', color: '#111111',
             backgroundColor: '#ffe040',
-            padding: { x: 12, y: 5 },
+            padding: { x: 14, y: 6 },
         }).setInteractive({ useHandCursor: true }).setVisible(false);
 
         this._continuarBtn.on('pointerover', () => this._continuarBtn.setBackgroundColor('#ffffff'));
         this._continuarBtn.on('pointerout',  () => this._continuarBtn.setBackgroundColor('#ffe040'));
         this._continuarBtn.on('pointerdown', () => this._fechar());
 
+        this._selectAnswer(0);
+
         // ── Suporte a teclado ─────────────────────────────────────────────────
+        this.input.keyboard.addCapture([
+            Phaser.Input.Keyboard.KeyCodes.UP,
+            Phaser.Input.Keyboard.KeyCodes.DOWN,
+            Phaser.Input.Keyboard.KeyCodes.SPACE,
+            Phaser.Input.Keyboard.KeyCodes.ENTER,
+            Phaser.Input.Keyboard.KeyCodes.ESC,
+        ]);
+
         this.input.keyboard.on('keydown', (e) => {
             if (this.respondeu) {
                 if (e.key === 'Enter' || e.key === ' ') this._fechar();
                 return;
             }
-            if (e.key === '1') this._responder(0);
-            if (e.key === '2') this._responder(1);
-            if (e.key === '3') this._responder(2);
+
+            if (this._isKey(e, 'ArrowUp', 'ArrowUp', 38)) {
+                e.preventDefault();
+                this._selectAnswer(this._selectedIndex - 1);
+            } else if (this._isKey(e, 'ArrowDown', 'ArrowDown', 40)) {
+                e.preventDefault();
+                this._selectAnswer(this._selectedIndex + 1);
+            } else if (this._isKey(e, 'Enter', 'Enter', 13) || this._isKey(e, ' ', 'Space', 32)) {
+                e.preventDefault();
+                this._responder(this._selectedIndex);
+            } else if (this._isKey(e, 'Escape', 'Escape', 27)) {
+                e.preventDefault();
+                this._responder(-1);
+            } else if (e.key === '1') this._responder(0);
+            else if (e.key === '2') this._responder(1);
+            else if (e.key === '3') this._responder(2);
         });
+    }
+
+    _isKey(e, key, code, keyCode) {
+        return e.key === key || e.code === code || e.keyCode === keyCode;
     }
 
     // ── Cria um botão de alternativa com estado de hover ──────────────────────
@@ -98,17 +129,34 @@ class QuizScene extends Phaser.Scene {
         };
         drawBg(0xffffff, 0x8b5a2b);
 
-        const t = this.add.text(cx, cy, label, {
-            fontFamily: 'monospace', fontSize: '8px', color: '#2c1204',
-            resolution: 3, wordWrap: { width: w - 16 },
-        }).setOrigin(0.5).setDepth(3);
+        const t = this.add.text(cx - w/2 + 14, cy, label, {
+            fontFamily: 'Arial, Verdana, sans-serif', fontSize: '11px', color: '#111111',
+            resolution: 3, wordWrap: { width: w - 28 }, align: 'left', lineSpacing: 2,
+            fixedWidth: w - 28,
+        }).setOrigin(0, 0.5).setDepth(3);
 
         const zone = this.add.zone(cx, cy, w, h).setDepth(4).setInteractive({ useHandCursor: true });
-        zone.on('pointerover', () => { if (!this.respondeu) drawBg(0xfde8a0, 0x8b5a2b); });
-        zone.on('pointerout',  () => { if (!this.respondeu) drawBg(0xffffff, 0x8b5a2b); });
+        zone.on('pointerover', () => { if (!this.respondeu) this._selectAnswer(index); });
         zone.on('pointerdown', () => this._responder(index));
 
         return { g, t, cx, cy, w, h, zone, drawBg };
+    }
+
+    // ── Seleção visual usada por teclado e mouse, sem afetar o toque direto ───
+    _selectAnswer(index) {
+        if (!this._btns || this._btns.length === 0 || this.respondeu) return;
+
+        const total = this._btns.length;
+        this._selectedIndex = ((index % total) + total) % total;
+
+        this._btns.forEach((btn, i) => {
+            if (i === this._selectedIndex) {
+                btn.drawBg(0xfde8a0, 0x8b5a2b);
+            } else {
+                btn.drawBg(0xffffff, 0x8b5a2b);
+            }
+            btn.t.setColor('#111111');
+        });
     }
 
     // ── Processa a resposta do jogador ────────────────────────────────────────
@@ -138,15 +186,25 @@ class QuizScene extends Phaser.Scene {
             }
         });
 
+        // Troca para um modo de leitura: a explicação ganha espaço e fonte maior.
+        this._btns.forEach(btn => {
+            btn.g.setVisible(false);
+            btn.t.setVisible(false);
+            btn.zone.setVisible(false);
+        });
+        if (this._instructionTxt) this._instructionTxt.setVisible(false);
+        this._questionTxt.setVisible(false);
+
         // Feedback textual
         if (this._acertou) {
-            this._feedbackTxt.setText('✔  CORRETO! +500 pontos e +5 segundos!').setColor('#004400');
+            this._feedbackTxt.setText('✔  CORRETO!').setColor('#004400');
             this._sndCorrect();
         } else {
-            this._feedbackTxt.setText('✘  Resposta correta está destacada em verde').setColor('#662200');
+            this._feedbackTxt.setText(`✘  QUASE!\nResposta correta: ${this.alternativas[this.correta]}`).setColor('#662200');
             this._sndWrong();
         }
-        this._explicacaoTxt.setText(this.explicacao);
+        this._feedbackTxt.setVisible(true);
+        this._explicacaoTxt.setText(this.explicacao).setVisible(true);
         this._continuarBtn.setVisible(true);
     }
 

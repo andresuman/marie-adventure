@@ -21,15 +21,15 @@ class BootScene extends Phaser.Scene {
         this.load.image('ground2', 'assets/ground2.png');
         this.load.image('bottle',  'assets/bottle.png');
         this.load.image('bottle2', 'assets/bottle2.png');
+        this.load.image('questionBlock', 'assets/question-block.png');
         this.load.image('background',  'assets/background.png');
         this.load.image('background2', 'assets/background2.png');
 
         // Banco de perguntas do quiz educativo
         this.load.json('quiz', 'data/quiz.json');
 
-        // Coração e frasco gerados via canvas (síncrono)
+        // Coração gerado via canvas (síncrono)
         this.makeHeart();
-        this.makeVial();
     }
 
     create() {
@@ -49,38 +49,6 @@ class BootScene extends Phaser.Scene {
             ], frameRate:6, repeat:-1 });
 
         this.scene.start('TitleScene');
-    }
-
-    // ── Frasco verde (coletável do quiz) gerado via canvas ────────────────────
-    makeVial() {
-        const tex = this.textures.createCanvas('vial', 16, 26);
-        const ctx = tex.getContext();
-
-        // Tampa dourada
-        ctx.fillStyle = '#ccaa00';
-        ctx.fillRect(3, 0, 10, 3);
-
-        // Gargalo (vidro escuro)
-        ctx.fillStyle = '#446644';
-        ctx.fillRect(5, 3, 6, 4);
-
-        // Corpo do frasco (vidro verde translúcido)
-        ctx.fillStyle = '#226633';
-        ctx.fillRect(2, 7, 12, 17);
-
-        // Conteúdo luminoso (verde radioativo)
-        ctx.fillStyle = '#44ff88';
-        ctx.fillRect(3, 9, 10, 14);
-
-        // Brilho lateral (reflexo de vidro)
-        ctx.fillStyle = 'rgba(200,255,220,0.55)';
-        ctx.fillRect(3, 10, 2, 10);
-
-        // Ponto de brilho no topo do líquido
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.fillRect(4, 9, 4, 1);
-
-        tex.refresh();
     }
 
     // ── Coração para HUD (canvas síncrono) ───────────────────────────────────

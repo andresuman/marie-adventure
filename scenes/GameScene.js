@@ -41,6 +41,7 @@ class GameScene extends Phaser.Scene {
         this.comboPoints = 0;   // pontos acumulados na sequência atual (devolvidos se pisar)
         this._quizActive = false; // impede abrir dois quizzes simultâneos
         this._quizQueue  = [];    // fila de perguntas sorteadas para a fase atual
+        this._playerJumping = false; // diferencia pulo voluntário de empurrões/dano
     }
 
     create() {
@@ -83,7 +84,7 @@ class GameScene extends Phaser.Scene {
         this.marie.body.setSize(192 * 0.55, 302 * 0.80);
         this.marie.body.setOffset(192 * 0.22, 302 * 0.10);
 
-        // ── Frascos coletáveis do quiz ────────────────────────────────────────
+        // ── Blocos coletáveis do quiz ─────────────────────────────────────────
         this._sortearQuiz();
         this.collectibles = this.physics.add.group();
         this._spawnCollectibles();
@@ -154,7 +155,11 @@ class GameScene extends Phaser.Scene {
         // ── Pulo ──────────────────────────────────────────────────────────────
         const jumpPressed = this.cursors.up.isDown || this.cursors.space.isDown ||
                             this.wasd.W.isDown || this.btnJump;
-        if (jumpPressed && onGround) { this.marie.setVelocityY(JUMP_VY); this.sndJump(); }
+        if (jumpPressed && onGround) {
+            this._playerJumping = true;
+            this.marie.setVelocityY(JUMP_VY);
+            this.sndJump();
+        }
 
         // ── Animação ─────────────────────────────────────────────────────────
         if (vx !== 0) this.marie.anims.play('marie-walk', true);
@@ -162,6 +167,7 @@ class GameScene extends Phaser.Scene {
 
         // ── Detectar passagem limpa + limpar capivaras fora da tela ──────────
         const marieOnGround = this.marie.body.blocked.down || this.marie.body.touching.down;
+        if (marieOnGround && this.marie.body.velocity.y >= 0) this._playerJumping = false;
         this.capybaras.getChildren().forEach(capy => {
             // Momento em que a capivara cruza Marie: decide se pontua ou não
             if (!capy._scored && !capy._stomped && !capy._missed && capy.x < this.marie.x - 40) {
@@ -197,7 +203,7 @@ class GameScene extends Phaser.Scene {
         this._quizQueue = Phaser.Utils.Array.Shuffle([...banco]).slice(0, 3);
     }
 
-    // ── Frascos coletáveis (flutuam no ar — jogador pula para pegar) ─────────
+    // ── Blocos coletáveis (flutuam no ar — jogador pula para pegar) ──────────
     _spawnCollectibles() {
         if (this._quizQueue.length === 0) return;
 
@@ -205,57 +211,54 @@ class GameScene extends Phaser.Scene {
             ? [380, 970, 1560]
             : [560, 1480, 2600];
 
-        // Y=170: ~78px acima do chão, dentro do alcance do pulo (máx ~138px)
-        const ITEM_Y = 170;
+        const ITEM_Y = 110;
 
         posX.forEach((pX, i) => {
             if (i >= this._quizQueue.length) return;
 
-            const item = this.collectibles.create(pX, ITEM_Y, 'vial')
+            const item = this.collectibles.create(pX, ITEM_Y, 'questionBlock')
                 .setDepth(8)
-                .setScale(2);
+                .setScale(0.28);
             item.body.allowGravity = false;
             item.body.immovable    = true;
 
-            // Flutuação suave (Y) com delay para não sincronizar os três
             this.tweens.add({
                 targets: item, y: ITEM_Y - 6,
                 duration: 820 + i * 130,
                 yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
             });
 
-            // Brilho pulsante (alpha)
             this.tweens.add({
-                targets: item, alpha: 0.60,
+                targets: item, alpha: 0.75,
                 duration: 510 + i * 90,
                 yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
             });
         });
     }
 
-    // ── Coleta do frasco — pausa jogo e abre o quiz como overlay ─────────────
+    // ── Coleta do bloco — pausa jogo e abre o quiz como overlay ──────────────
     _onCollect(marie, item) {
         if (this._quizActive || this.dead) return;
+        // Só abre quiz quando Marie alcança o bloco durante um pulo iniciado pelo jogador.
+        // Isso evita ativação acidental após dano/empurrão de capivara ou reposicionamento.
+        if (this.invincible || !this._playerJumping) return;
         if (this._quizQueue.length === 0) return;
 
+        this._playerJumping = false;
         this._quizActive = true;
         const pergunta = this._quizQueue.shift(); // consome a próxima pergunta da fila
 
         item.destroy();
         this.sndCollect();
 
-        // Escuta o resultado (uma só vez), limpa capivaras e aplica a recompensa
+        // Escuta o resultado uma só vez; limpar capivaras evita colisão surpresa ao retornar
         this.events.once('quiz-resolvido', ({ acertou }) => {
             this._quizActive = false;
-            // Remove todas as capivaras da tela: evita colisão surpresa ao retornar
             this.capybaras.clear(true, true);
             if (acertou) {
-                this.score    += 500;
-                this.gameTime  = Math.min(this.gameTime + 5, 99);
+                this.score += 500;
                 this.events.emit('scoreChanged', this.score);
-                this.events.emit('timeChanged',  this.gameTime);
                 this._floatText('+500', this.marie.x, this.marie.y - 40, '#44ff88');
-                this._floatText('+5s',  this.marie.x + 30, this.marie.y - 58, '#66ccff');
             }
         });
 
@@ -392,6 +395,7 @@ class GameScene extends Phaser.Scene {
         });
 
         const cam = this.cameras.main.scrollX;
+        this._playerJumping = false;
         this.marie.setPosition(cam + 80, GROUND_Y - 80);
         this.marie.setVelocity(0, 0);
     }

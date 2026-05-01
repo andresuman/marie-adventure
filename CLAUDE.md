@@ -7,9 +7,11 @@ Leia antes de qualquer modificação no projeto.
 
 ## Visão Geral
 
-Jogo 2D de plataforma em **Phaser 3** (HTML/JS puro, sem build step).
+Jogo 2D de plataforma + quiz educativo em **Phaser 3** (HTML/JS puro, sem build step).
 Celebra os 100 anos da visita de Marie Curie a Águas de Lindóia (1926–2026).
 Deploy via GitHub Pages: `https://andresuman.github.io/marie-adventure/`
+
+Loop principal atual: correr/pular, desviar de capivaras, coletar blocos de quiz suspensos, responder curiosidades históricas e chegar à garrafa de água no fim de cada fase antes do tempo acabar.
 
 ---
 
@@ -35,11 +37,15 @@ marie-adventure/
 ├── index.html              # Entrada; carrega scripts com ?v=YYYYMMDD
 ├── game.js                 # Config Phaser (480×270) + window.GAME_SETTINGS
 ├── HighScore.js            # Persistência de recorde em localStorage (window.HighScore)
+├── QuizStats.js            # Persistência de acertos/tentativas do quiz (window.QuizStats)
+├── data/
+│   └── quiz.json           # Banco de perguntas por fase (fase1/fase2)
 ├── scenes/
 │   ├── BootScene.js        # preload() de assets + create() de animações → inicia TitleScene
 │   ├── TitleScene.js       # Tela inicial; toggle de música; high score; inicia GameScene
-│   ├── GameScene.js        # Loop principal; física; SFX; controles
+│   ├── GameScene.js        # Loop principal; física; capivaras; blocos de quiz; SFX; controles
 │   ├── HUDScene.js         # Overlay de pontos/vidas/tempo/combo (cena paralela)
+│   ├── QuizScene.js        # Overlay de pergunta, alternativas, feedback e explicação
 │   ├── GameOverScene.js    # Fim de jogo; high score; restart → GameScene
 │   └── WinScene.js         # Vitória; high score; restart → GameScene
 ├── audio/
@@ -120,12 +126,32 @@ Usado em `TitleScene` (exibe recorde), `GameOverScene` e `WinScene` (verifica/ex
 
 ---
 
+## Estatísticas do quiz (QuizStats.js)
+
+```js
+window.QuizStats.getTotal()        // Total lifetime de perguntas respondidas
+window.QuizStats.getAcertos()      // Total lifetime de respostas corretas
+window.QuizStats.registrar(true)   // Incrementa total e acertos
+window.QuizStats.registrar(false)  // Incrementa apenas total
+```
+
+Persistência via `localStorage`:
+- `'marie-quiz-total'`
+- `'marie-quiz-acertos'`
+
+Usado em `QuizScene._responder()` para registrar cada resposta e em `GameOverScene`/`WinScene` para exibir `Curiosidades: X/Y corretas`.
+Essas estatísticas são acumuladas entre partidas, assim como o recorde.
+
+---
+
 ## Fluxo de cenas
 
 ```
 BootScene → TitleScene → GameScene (fase 1) + HUDScene (paralela)
+                         ↕ QuizScene (overlay, quando coleta bloco)
                                 ↓
                          GameScene (fase 2) + HUDScene (paralela)
+                         ↕ QuizScene (overlay, quando coleta bloco)
                                 ↓
                             WinScene
                   (ou GameOverScene de qualquer fase)
@@ -135,6 +161,8 @@ BootScene → TitleScene → GameScene (fase 1) + HUDScene (paralela)
 
 - `HUDScene` é lançada com `this.scene.launch('HUDScene', { gameScene: this, level: this.level })`.
 - `HUDScene` recebe referência à `GameScene` em `init(data)` e escuta eventos via `this.gameScene.events.on(...)`.
+- `QuizScene` é lançada como overlay com `this.scene.launch('QuizScene', { ...pergunta, gameScene: this })` após `GameScene` ser pausada.
+- `QuizScene._fechar()` retoma `GameScene`, para a própria cena e emite `quiz-resolvido` na instância de `GameScene`.
 - Ao terminar o jogo: `this.scene.stop('HUDScene')` antes de iniciar GameOver/Win.
 
 ---
@@ -153,7 +181,22 @@ Escuta em HUDScene: `this.gameScene.events.on('nomeDoEvento', callback)`.
 
 ---
 
-## Sistema de pontuação (v2.0.0)
+## Evento entre GameScene e QuizScene
+
+| Evento | Payload | Quando |
+|---|---|---|
+| `quiz-resolvido` | `{ acertou: boolean }` | Emitido por `QuizScene._fechar()` após o jogador responder e clicar/teclar continuar |
+
+Fluxo obrigatório:
+1. `GameScene._onCollect()` faz `this.scene.pause()` e lança `QuizScene`.
+2. `GameScene` registra `this.events.once('quiz-resolvido', ({ acertou }) => { ... })` antes de pausar.
+3. `QuizScene._fechar()` faz `this.scene.resume('GameScene')`, `this.scene.stop()` e então `gs.events.emit('quiz-resolvido', { acertou: this._acertou })`.
+
+Usar `once`, não `on`, para evitar listeners acumulados entre coletas.
+
+---
+
+## Sistema de pontuação
 
 ```
 Passagem limpa (capivara passa por Marie sem ser pisada):
@@ -170,11 +213,105 @@ Encosto lateral (loseLife()):
   → perde 1 vida
   → combo = 1
   → comboPoints = 0   (pontos já "bankeados" são mantidos)
+
+Quiz correto:
+  → score += 500
+  → combo não muda
+
+Quiz errado ou cancelado por Escape:
+  → sem bônus e sem penalidade direta
 ```
 
 - `combo` começa em 1; HUD exibe `★N` (N = combo - 1 = acertos seguidos).
 - Cores do combo no HUD: `#aaaaaa` (0), `#ffdd00` (1–2), `#ff9900` (3–5), `#ff4444` (6+).
 - Passagem limpa detectada em `update()`: `capy.x < this.marie.x - 40 && !capy._scored && !capy._stomped && !capy._missed` e Marie deve estar no ar (`!marieOnGround`). Se Marie está no chão, marca `capy._missed = true` (sem pontos, sem nova tentativa).
+- Bônus do quiz emite `scoreChanged` e mostra texto flutuante `+500`.
+
+---
+
+## Sistema de quiz educativo
+
+### Banco de perguntas (`data/quiz.json`)
+
+Formato obrigatório:
+
+```json
+{
+  "fase1": [
+    {
+      "pergunta": "Texto da pergunta",
+      "alternativas": ["A", "B", "C"],
+      "correta": 1,
+      "explicacao": "Texto exibido após responder."
+    }
+  ],
+  "fase2": []
+}
+```
+
+- `fase1`: perguntas sobre Marie Curie, visita de 1926 e Thermas de Lindoya.
+- `fase2`: perguntas sobre Águas de Lindóia, legado histórico e contexto de 2026.
+- `correta` é índice zero-based (`0`, `1` ou `2`).
+- Manter exatamente 3 alternativas por pergunta: `QuizScene` posiciona 3 botões fixos (`btnYs = [112, 154, 196]`).
+
+### Sorteio e blocos em GameScene
+
+Estado inicial em `GameScene.init()`:
+
+```js
+this._quizActive = false; // impede abrir dois quizzes simultâneos
+this._quizQueue  = [];    // fila de perguntas sorteadas para a fase atual
+```
+
+Métodos principais:
+
+| Método | Responsabilidade |
+|---|---|
+| `_sortearQuiz()` | Lê `this.cache.json.get('quiz')`, escolhe `fase1`/`fase2`, embaralha e pega até 3 perguntas |
+| `_spawnCollectibles()` | Cria os blocos `questionBlock` sem gravidade, com tweens de flutuação/alpha |
+| `_onCollect(marie, item)` | Consome próxima pergunta, destrói bloco, toca coleta, pausa jogo e abre `QuizScene` |
+
+Posições atuais dos blocos:
+
+```js
+// fase 1
+[380, 970, 1560]
+
+// fase 2
+[560, 1480, 2600]
+
+const ITEM_Y = 110;
+```
+
+Ao retornar do quiz:
+- `_quizActive = false`.
+- `this.capybaras.clear(true, true)` remove capivaras visíveis para evitar colisão surpresa.
+- Se `acertou`, aplica `+500` pontos.
+
+### QuizScene
+
+Payload esperado em `init(data)`:
+
+```js
+{
+  pergunta: string,
+  alternativas: string[],
+  correta: number,
+  explicacao: string,
+  gameScene: GameScene
+}
+```
+
+Controles:
+- Teclado: `↑/↓` selecionam alternativa; `Enter` ou `Espaço` confirmam; `1/2/3` respondem diretamente; `Esc` responde como erro (`indice = -1`).
+- Mouse/touch: tocar/clicar na alternativa responde; tocar/clicar em `CONTINUAR` fecha após o feedback.
+- Após responder, `Enter` ou `Espaço` também fecham o quiz.
+
+Feedback:
+- Correto: botão correto verde, texto `✔  CORRETO! +500 pontos!`, SFX `_sndCorrect()`.
+- Errado: botão escolhido vermelho, correto verde, texto com a resposta correta, SFX `_sndWrong()`.
+- A explicação histórica sempre é exibida antes de continuar.
+- `window.QuizStats.registrar(this._acertou)` é chamado exatamente uma vez por resposta.
 
 ---
 
@@ -194,6 +331,7 @@ Encosto lateral (loseLife()):
 | Método | Timbre | Quando |
 |---|---|---|
 | `sndJump()` | square, 180→420 Hz | Pulo |
+| `sndCollect()` | square, arpejo asc. | Coletar bloco de quiz |
 | `sndStomp()` | square, 320→55 Hz | Pisar em capivara |
 | `sndCleanPass(combo)` | square, notas C5–A5 | Passagem limpa (evolui com combo: quinta em ≥3, oitava em ≥5) |
 | `sndHurt()` | sawtooth, 220→70 Hz | Encostar em capivara (dano) |
@@ -201,6 +339,10 @@ Encosto lateral (loseLife()):
 | `sndWin()` | square, 4 notas asc. | Transição fase 1 → fase 2 |
 | `sndVictory()` | square, 5 notas asc. | Vitória final (fase 2 concluída) |
 | `sndGameOver()` | sawtooth, 4 notas desc. | Game over |
+
+`QuizScene` também toca SFX inline usando o mesmo `window.SFX_AUDIO_CONTEXT`:
+- `_sndCorrect()`: arpejo ascendente em Fá maior ao acertar.
+- `_sndWrong()`: dois tons descendentes suaves ao errar.
 
 ### Adicionar um novo SFX em GameScene
 
@@ -358,9 +500,11 @@ Tamanho da fonte escala com o combo: 14px (normal), 16px (combo ≥3), 18px (com
 | `bottle2` | bottle2.png | Objetivo fase 2 — garrafa Lindóia moderna (102×226 px) |
 | `background` | background.png | Cenário fase 1 (1946 px largura) |
 | `background2` | background2.png | Cenário fase 2 (2972 px largura) |
+| `questionBlock` | question-block.png | Bloco coletável que abre o quiz educativo |
 | `heart` | gerado via canvas em BootScene | Ícone de vida no HUD |
 
 Para adicionar asset: colocar em `assets/`, adicionar `this.load.image(...)` em `BootScene.preload()`.
+Para adicionar/alterar perguntas: editar `data/quiz.json` e manter `this.load.json('quiz', 'data/quiz.json')` em `BootScene.preload()`.
 
 ---
 
