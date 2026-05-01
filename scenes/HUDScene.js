@@ -33,9 +33,10 @@ class HUDScene extends Phaser.Scene {
         this.timeTxt = this.add.text(W - 4, 14, '01:00', style).setOrigin(1, 0);
 
         // ── Estado inicial: lê direto do gameScene para refletir dados carregados de fase anterior ──
-        // Eventos só disparam em mudanças — sem isso pontos e vidas ficam zerados até o primeiro evento.
+        // Eventos só disparam em mudanças — sem isso pontos, vidas e tempo ficam errados até o primeiro evento.
         this.scoreTxt.setText(String(this.gameScene.score).padStart(5, '0'));
         this.heartIcons.forEach((h, i) => h.setAlpha(i < this.gameScene.lives ? 1 : 0.2));
+        this.timeTxt.setText(this._fmt(this.gameScene.gameTime));
 
         // ── Ouvir eventos do GameScene ────────────────────────────────────────
         this.gameScene.events.on('scoreChanged', (v) => {

@@ -171,7 +171,7 @@ Escuta em HUDScene: `this.gameScene.events.on('nomeDoEvento', callback)`.
 Fluxo obrigatório:
 1. `GameScene._onCollect()` faz `this.scene.pause()` e lança `QuizScene`.
 2. `GameScene` registra `this.events.once('quiz-resolvido', ({ acertou }) => { ... })` antes de pausar.
-3. `QuizScene._fechar()` faz `this.scene.resume('GameScene')`, `this.scene.stop()` e então `gs.events.emit('quiz-resolvido', { acertou: this._acertou })`.
+3. `QuizScene._fechar()` emite `gs.events.emit('quiz-resolvido', { acertou: this._acertou })` primeiro (enquanto `GameScene` ainda está pausada), depois `this.scene.resume('GameScene')` e por último `this.scene.stop()`. A ordem importa: emitir antes de resumir garante que `_returnMarieFromQuiz()` execute antes de a física retomar.
 
 Usar `once`, não `on`, para evitar listeners acumulados entre coletas.
 
