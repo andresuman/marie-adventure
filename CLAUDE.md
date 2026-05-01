@@ -7,11 +7,11 @@ Leia antes de qualquer modificação no projeto.
 
 ## Visão Geral
 
-Jogo 2D de plataforma + quiz educativo em **Phaser 3** (HTML/JS puro, sem build step).
+Jogo 2D de plataforma + desafio de perguntas educativo em **Phaser 3** (HTML/JS puro, sem build step).
 Celebra os 100 anos da visita de Marie Curie a Águas de Lindóia (1926–2026).
 Deploy via GitHub Pages: `https://andresuman.github.io/marie-adventure/`
 
-Loop principal atual: correr/pular, desviar de capivaras, coletar blocos de quiz suspensos, responder curiosidades históricas e chegar à garrafa de água no fim de cada fase antes do tempo acabar.
+Loop principal atual: correr/pular, desviar de capivaras, coletar blocos de perguntas suspensos, responder curiosidades históricas e chegar à garrafa de água no fim de cada fase antes do tempo acabar.
 
 ---
 
@@ -37,15 +37,15 @@ marie-adventure/
 ├── index.html              # Entrada; carrega scripts com ?v=YYYYMMDD
 ├── game.js                 # Config Phaser (480×270) + window.GAME_SETTINGS
 ├── HighScore.js            # Persistência de recorde em localStorage (window.HighScore)
-├── QuizStats.js            # Persistência de acertos/tentativas do quiz (window.QuizStats)
+├── QuizStats.js            # Persistência de acertos/tentativas do desafio de perguntas (window.QuizStats)
 ├── data/
 │   └── quiz.json           # Banco de perguntas por fase (fase1/fase2)
 ├── scenes/
 │   ├── BootScene.js        # preload() de assets + create() de animações → inicia TitleScene
 │   ├── TitleScene.js       # Tela inicial; toggle de música; high score; inicia GameScene
-│   ├── GameScene.js        # Loop principal; física; capivaras; blocos de quiz; SFX; controles
+│   ├── GameScene.js        # Loop principal; física; capivaras; blocos de perguntas; SFX; controles
 │   ├── HUDScene.js         # Overlay de pontos/vidas/tempo/combo (cena paralela)
-│   ├── QuizScene.js        # Overlay de pergunta, alternativas, feedback e explicação
+│   ├── QuizScene.js        # Overlay do desafio de perguntas, alternativas, feedback e explicação
 │   ├── GameOverScene.js    # Fim de jogo; high score; restart → GameScene
 │   └── WinScene.js         # Vitória; high score; restart → GameScene
 ├── audio/
@@ -126,7 +126,7 @@ Usado em `TitleScene` (exibe recorde), `GameOverScene` e `WinScene` (verifica/ex
 
 ---
 
-## Estatísticas do quiz (QuizStats.js)
+## Estatísticas do desafio de perguntas (QuizStats.js)
 
 ```js
 window.QuizStats.getTotal()        // Total lifetime de perguntas respondidas
@@ -229,7 +229,7 @@ Quiz errado ou cancelado por Escape:
 
 ---
 
-## Sistema de quiz educativo
+## Sistema de desafio de perguntas educativo
 
 ### Banco de perguntas (`data/quiz.json`)
 
@@ -338,7 +338,7 @@ Feedback:
 | Método | Timbre | Quando |
 |---|---|---|
 | `sndJump()` | square, 180→420 Hz | Pulo |
-| `sndCollect()` | square, arpejo asc. | Coletar bloco de quiz |
+| `sndCollect()` | square, arpejo asc. | Coletar bloco de perguntas |
 | `sndStomp()` | square, 320→55 Hz | Pisar em capivara |
 | `sndCleanPass(combo)` | square, notas C5–A5 | Passagem limpa (evolui com combo: quinta em ≥3, oitava em ≥5) |
 | `sndHurt()` | sawtooth, 220→70 Hz | Encostar em capivara (dano) |
@@ -507,7 +507,7 @@ Tamanho da fonte escala com o combo: 14px (normal), 16px (combo ≥3), 18px (com
 | `bottle2` | bottle2.png | Objetivo fase 2 — garrafa Lindóia moderna (102×226 px) |
 | `background` | background.png | Cenário fase 1 (1946 px largura) |
 | `background2` | background2.png | Cenário fase 2 (2972 px largura) |
-| `questionBlock` | question-block.png | Bloco coletável que abre o quiz educativo |
+| `questionBlock` | question-block.png | Bloco coletável que abre o desafio de perguntas educativo |
 | `heart` | gerado via canvas em BootScene | Ícone de vida no HUD |
 
 Para adicionar asset: colocar em `assets/`, adicionar `this.load.image(...)` em `BootScene.preload()`.

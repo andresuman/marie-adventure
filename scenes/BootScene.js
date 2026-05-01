@@ -25,7 +25,7 @@ class BootScene extends Phaser.Scene {
         this.load.image('background',  'assets/background.png');
         this.load.image('background2', 'assets/background2.png');
 
-        // Banco de perguntas do quiz educativo
+        // Banco do desafio de perguntas educativo
         this.load.json('quiz', 'data/quiz.json');
 
         // Coração gerado via canvas (síncrono)
