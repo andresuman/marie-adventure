@@ -91,11 +91,11 @@ class QuizScene extends Phaser.Scene {
 
         // ── Botão CONTINUAR (oculto até responder) ────────────────────────────
         this._continuarBtn = txt(W/2, 234, '▶  CONTINUAR', {
-            fontSize: '14px', color: '#111111',
+            fontSize: '15px', color: '#111111',
             stroke: '#000000',
             strokeThickness: 1,
             backgroundColor: '#ffe040',
-            padding: { x: 18, y: 8 },
+            padding: { x: 20, y: 9 },
         }).setInteractive({ useHandCursor: true }).setVisible(false);
 
         this._continuarBtn.on('pointerover', () => this._continuarBtn.setBackgroundColor('#ffffff'));
