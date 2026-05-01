@@ -35,8 +35,23 @@ Criado para celebrar os **100 anos da visita de Marie Curie a Águas de Lindóia
 
 - Cada fase sorteia até **3 perguntas** do banco correspondente em `data/quiz.json`.
 - Os blocos de quiz usam o sprite `assets/question-block.png` e ficam suspensos no cenário para incentivar o jogador a pular e coletar.
-- As perguntas têm 3 alternativas, uma resposta correta e uma explicação curta exibida após a escolha.
+- As perguntas têm 1 resposta correta, 2 respostas erradas e uma explicação curta exibida após a escolha.
+- As alternativas são embaralhadas automaticamente quando o quiz abre, então a resposta correta não fica presa a uma posição fixa.
 - Ao voltar do quiz, as capivaras visíveis são removidas para evitar colisões surpresa imediatamente após a retomada.
+
+Formato de cada pergunta em `data/quiz.json`:
+
+```json
+{
+  "pergunta": "Texto da pergunta",
+  "respostaCorreta": "Alternativa correta",
+  "respostasErradas": [
+    "Alternativa errada 1",
+    "Alternativa errada 2"
+  ],
+  "explicacao": "Texto exibido após responder."
+}
+```
 
 ## Áudio
 

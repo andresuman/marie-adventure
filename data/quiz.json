@@ -2,184 +2,274 @@
   "fase1": [
     {
       "pergunta": "Em que ano Marie Curie visitou Thermas de Lindoya?",
-      "alternativas": ["1916", "1926", "1936"],
-      "correta": 1,
+      "respostaCorreta": "1926",
+      "respostasErradas": [
+        "1916",
+        "1936"
+      ],
       "explicacao": "Foi em 14 de agosto de 1926. Marie veio ao Brasil a convite do Instituto Franco-Brasileiro e ficou cerca de seis semanas no país."
     },
     {
       "pergunta": "Quantos prêmios Nobel Marie Curie ganhou?",
-      "alternativas": ["Um, em Física", "Dois — Física e Química", "Três — Física, Química e Medicina"],
-      "correta": 1,
+      "respostaCorreta": "Dois — Física e Química",
+      "respostasErradas": [
+        "Um, em Física",
+        "Três — Física, Química e Medicina"
+      ],
       "explicacao": "Ela foi a primeira pessoa a ganhar dois Nobel em ciências distintas: Física em 1903 (com Pierre Curie) e Química em 1911, sozinha."
     },
     {
       "pergunta": "Quem convidou Marie Curie a visitar Thermas de Lindoya?",
-      "alternativas": ["Dr. Francisco Tozzi", "Bertha Lutz", "Getúlio Vargas"],
-      "correta": 0,
+      "respostaCorreta": "Dr. Francisco Tozzi",
+      "respostasErradas": [
+        "Bertha Lutz",
+        "Getúlio Vargas"
+      ],
       "explicacao": "O Dr. Francisco Tozzi era um médico italiano que fundou as Thermas de Lindoya em 1916 e estudava as propriedades curativas das águas locais."
     },
     {
       "pergunta": "Qual elemento químico Marie Curie descobriu junto com o rádio?",
-      "alternativas": ["Urânio", "Polônio", "Tório"],
-      "correta": 1,
+      "respostaCorreta": "Polônio",
+      "respostasErradas": [
+        "Urânio",
+        "Tório"
+      ],
       "explicacao": "Em 1898, Marie e Pierre Curie descobriram o polônio (nomeado em homenagem à Polônia, terra natal de Marie) e logo depois o rádio."
     },
     {
       "pergunta": "Marie Curie veio ao Brasil sozinha?",
-      "alternativas": ["Sim, sozinha", "Não, veio com a filha Irène e uma comitiva", "Veio só com o marido Pierre"],
-      "correta": 1,
+      "respostaCorreta": "Não, veio com a filha Irène e uma comitiva",
+      "respostasErradas": [
+        "Sim, sozinha",
+        "Veio só com o marido Pierre"
+      ],
       "explicacao": "Ela veio com a filha Irène Joliot-Curie e uma comitiva de cerca de 20 cientistas, incluindo a brasileira Bertha Lutz."
     },
     {
       "pergunta": "Quem recebeu Marie Curie na estação de Mogi Mirim?",
-      "alternativas": ["O próprio Dr. Tozzi", "Fernando Tozzi, filho do doutor", "O prefeito da cidade"],
-      "correta": 1,
+      "respostaCorreta": "Fernando Tozzi, filho do doutor",
+      "respostasErradas": [
+        "O próprio Dr. Tozzi",
+        "O prefeito da cidade"
+      ],
       "explicacao": "Fernando Tozzi falava francês fluente e serviu de intérprete durante a viagem de carro até a estância."
     },
     {
       "pergunta": "O que chamou atenção de Marie nas águas de Thermas de Lindoya?",
-      "alternativas": ["Eram quentes", "Eram radioativas", "Tinham sabor doce"],
-      "correta": 1,
+      "respostaCorreta": "Eram radioativas",
+      "respostasErradas": [
+        "Eram quentes",
+        "Tinham sabor doce"
+      ],
       "explicacao": "As águas são naturalmente radioativas em baixa dose, oligometálicas e brotam de uma fenda com cerca de 1 km de profundidade."
     },
     {
       "pergunta": "Qual era a profissão de Marie Curie?",
-      "alternativas": ["Médica", "Física e Química", "Astrônoma"],
-      "correta": 1,
+      "respostaCorreta": "Física e Química",
+      "respostasErradas": [
+        "Médica",
+        "Astrônoma"
+      ],
       "explicacao": "Ela foi pioneira no estudo da radioatividade, termo que ela mesma criou, e a primeira mulher professora na Universidade de Sorbonne."
     },
     {
       "pergunta": "De qual país Marie Curie era originalmente?",
-      "alternativas": ["França", "Polônia", "Itália"],
-      "correta": 1,
+      "respostaCorreta": "Polônia",
+      "respostasErradas": [
+        "França",
+        "Itália"
+      ],
       "explicacao": "Marie nasceu em Varsóvia em 1867. Mudou-se para Paris aos 24 anos para estudar na Sorbonne."
     },
     {
       "pergunta": "O que Marie Curie disse sobre o futuro de Thermas de Lindoya?",
-      "alternativas": ["Que o lugar não tinha potencial", "Que estava 'talhado a um grande futuro'", "Que era igual a estâncias europeias"],
-      "correta": 1,
+      "respostaCorreta": "Que estava 'talhado a um grande futuro'",
+      "respostasErradas": [
+        "Que o lugar não tinha potencial",
+        "Que era igual a estâncias europeias"
+      ],
       "explicacao": "A frase foi registrada pelo Jornal do Brasil após a visita e tornou-se famosa na história da cidade."
     },
     {
       "pergunta": "Que transporte Marie usou para chegar a Thermas de Lindoya?",
-      "alternativas": ["Trem direto", "Trem até Mogi Mirim, depois carro", "Avião"],
-      "correta": 1,
+      "respostaCorreta": "Trem até Mogi Mirim, depois carro",
+      "respostasErradas": [
+        "Ônibus",
+        "Carruagem"
+      ],
       "explicacao": "Saiu da Estação da Luz em São Paulo, desembarcou em Mogi Mirim e fez o trecho final de carro passando por Itapira."
     },
     {
       "pergunta": "Quantos cientistas vieram com Marie Curie a Thermas de Lindoya?",
-      "alternativas": ["Cerca de 5", "Cerca de 20", "Mais de 50"],
-      "correta": 1,
+      "respostaCorreta": "Cerca de 20",
+      "respostasErradas": [
+        "Cerca de 5",
+        "Mais de 50"
+      ],
       "explicacao": "A comitiva tinha aproximadamente 20 pessoas, entre químicos, médicos e a zoóloga Bertha Lutz."
     },
     {
       "pergunta": "Qual o nome da filha de Marie Curie que veio ao Brasil?",
-      "alternativas": ["Irène", "Ève", "Marie"],
-      "correta": 0,
+      "respostaCorreta": "Irène",
+      "respostasErradas": [
+        "Ève",
+        "Marie"
+      ],
       "explicacao": "Irène Joliot-Curie também se tornou uma cientista famosa e ganhou o Nobel de Química em 1935."
     },
     {
       "pergunta": "Que aparelho Marie usou para confirmar a radioatividade das águas?",
-      "alternativas": ["Termômetro", "Eletrômetro / detector de radiação", "Microscópio"],
-      "correta": 1,
+      "respostaCorreta": "Eletrômetro",
+      "respostasErradas": [
+        "Termômetro",
+        "Microscópio"
+      ],
       "explicacao": "Marie e Pierre Curie usavam eletrômetros sensíveis para medir a radiação ionizante das amostras."
     },
     {
       "pergunta": "Em que mês de 1926 Marie Curie chegou a Thermas de Lindoya?",
-      "alternativas": ["Junho", "Agosto", "Outubro"],
-      "correta": 1,
+      "respostaCorreta": "Agosto",
+      "respostasErradas": [
+        "Junho",
+        "Outubro"
+      ],
       "explicacao": "A visita foi em 14 de agosto de 1926, um sábado, conforme registros históricos da época."
     }
   ],
   "fase2": [
     {
       "pergunta": "Em que ano a cidade passou a se chamar Águas de Lindóia?",
-      "alternativas": ["1916", "1938", "1969"],
-      "correta": 1,
-      "explicacao": "A cidade foi emancipada de Serra Negra em 1938 e adotou o nome Águas de Lindóia."
+      "respostaCorreta": "1938",
+      "respostasErradas": [
+        "1916",
+        "1969"
+      ],
+      "explicacao": "Em 1938 foi criado o distrito de Águas de Lindóia, a emancipação como município veio em 1953."
     },
     {
       "pergunta": "A água de Águas de Lindóia foi enviada para qual missão espacial?",
-      "alternativas": ["Sputnik", "Apollo 11", "Voyager"],
-      "correta": 1,
+      "respostaCorreta": "Apollo 11",
+      "respostasErradas": [
+        "Sputnik",
+        "Voyager"
+      ],
       "explicacao": "Em 1969 a empresa Lindoya Verão emitiu nota fiscal de 1.200 garrafas para Cabo Kennedy. A NASA nunca confirmou nem negou que foram usadas na missão."
     },
     {
-      "pergunta": "Quantos litros de água teriam ido para a missão Apollo 11?",
-      "alternativas": ["60 litros", "600 litros", "6.000 litros"],
-      "correta": 1,
+      "pergunta": "Quantos litros de água Lindoya teriam ido para a missão Apollo 11?",
+      "respostaCorreta": "600 litros",
+      "respostasErradas": [
+        "60 litros",
+        "6.000 litros"
+      ],
       "explicacao": "Foram 1.200 garrafas, totalizando 600 litros, embarcadas em 2 de abril de 1969."
     },
     {
       "pergunta": "Como é classificada a água de Águas de Lindóia?",
-      "alternativas": ["Água gaseificada artificialmente", "Oligometálica e radioativa", "Água destilada"],
-      "correta": 1,
+      "respostaCorreta": "Oligometálica e radioativa",
+      "respostasErradas": [
+        "Água gaseificada artificialmente",
+        "Água destilada"
+      ],
       "explicacao": "É naturalmente oligometálica, hipossódica, hipotermal e radioativa em baixa dose."
     },
     {
       "pergunta": "Qual era a temperatura natural das águas que Marie estudou?",
-      "alternativas": ["10°C", "30°C", "60°C"],
-      "correta": 1,
+      "respostaCorreta": "30°C",
+      "respostasErradas": [
+        "10°C",
+        "60°C"
+      ],
       "explicacao": "As águas brotam a aproximadamente 30°C, por isso são consideradas hipotermais."
     },
     {
       "pergunta": "De que profundidade brota a água de Águas de Lindóia?",
-      "alternativas": ["100 metros", "Cerca de 1 km", "5 km"],
-      "correta": 1,
+      "respostaCorreta": "Cerca de 1 km",
+      "respostasErradas": [
+        "100 metros",
+        "5 km"
+      ],
       "explicacao": "A água atravessa uma fenda de cerca de 1 km de profundidade, atravessando rochas antigas."
     },
     {
       "pergunta": "Em que ano Marie Curie faleceu?",
-      "alternativas": ["1934", "1944", "1954"],
-      "correta": 0,
+      "respostaCorreta": "1934",
+      "respostasErradas": [
+        "1944",
+        "1954"
+      ],
       "explicacao": "Ela morreu em 1934, vítima de anemia aplástica causada por anos de exposição à radiação."
     },
     {
       "pergunta": "Onde está conservado o caderno de pesquisa de Marie Curie hoje?",
-      "alternativas": ["Em uma caixa de chumbo", "Em um museu comum", "Foi destruído"],
-      "correta": 0,
+      "respostaCorreta": "Em uma caixa de chumbo",
+      "respostasErradas": [
+        "Em um museu da Polônia",
+        "Foi destruído"
+      ],
       "explicacao": "Os cadernos ainda são tão radioativos que precisam ser guardados em caixas de chumbo na Biblioteca Nacional da França."
     },
     {
       "pergunta": "Marie Curie foi a primeira mulher a:",
-      "alternativas": ["Ganhar um Nobel", "Ir à Lua", "Pilotar um avião"],
-      "correta": 0,
+      "respostaCorreta": "Ganhar um Nobel",
+      "respostasErradas": [
+        "Ir à Lua",
+        "Pilotar um avião"
+      ],
       "explicacao": "Ela foi a primeira mulher a ganhar um Nobel (Física, 1903) e a primeira pessoa, de qualquer gênero, a ganhar dois Nobel."
     },
     {
       "pergunta": "Quantos anos completos em 2026 desde a visita de Marie a Thermas de Lindoya?",
-      "alternativas": ["50 anos", "100 anos", "150 anos"],
-      "correta": 1,
+      "respostaCorreta": "100 anos",
+      "respostasErradas": [
+        "50 anos",
+        "150 anos"
+      ],
       "explicacao": "A visita foi em 1926 e 2026 marca o centenário deste momento histórico para a cidade."
     },
     {
       "pergunta": "Qual elemento químico tem o símbolo químico Ra?",
-      "alternativas": ["Radônio", "Rádio", "Rádon"],
-      "correta": 1,
+      "respostaCorreta": "Rádio",
+      "respostasErradas": [
+        "Radônio",
+        "Rádon"
+      ],
       "explicacao": "O Rádio (Ra) é o elemento descoberto por Marie e Pierre Curie em 1898, com número atômico 88."
     },
     {
       "pergunta": "Marie Curie cunhou o termo científico:",
-      "alternativas": ["Eletricidade", "Radioatividade", "Magnetismo"],
-      "correta": 1,
+      "respostaCorreta": "Radioatividade",
+      "respostasErradas": [
+        "Eletricidade",
+        "Magnetismo"
+      ],
       "explicacao": "Ela criou a palavra 'radioatividade' para descrever o fenômeno de elementos que emitem radiação espontaneamente."
     },
     {
       "pergunta": "Onde Marie Curie estudou e lecionou?",
-      "alternativas": ["Universidade de Oxford", "Universidade de Sorbonne, Paris", "Universidade de Berlim"],
-      "correta": 1,
+      "respostaCorreta": "Universidade de Sorbonne, Paris",
+      "respostasErradas": [
+        "Universidade de Oxford",
+        "Universidade de Berlim"
+      ],
       "explicacao": "Ela estudou e depois lecionou na Sorbonne, onde se tornou a primeira mulher professora da história da universidade."
     },
     {
       "pergunta": "Quem fundou as Thermas de Lindoya?",
-      "alternativas": ["Marie Curie", "Dr. Francisco Tozzi", "Getúlio Vargas"],
-      "correta": 1,
+      "respostaCorreta": "Dr. Francisco Tozzi",
+      "respostasErradas": [
+        "Marie Curie",
+        "Getúlio Vargas"
+      ],
       "explicacao": "O Dr. Tozzi, médico italiano, fundou a estância em 1916 após adquirir as terras onde brotavam as fontes."
     },
     {
       "pergunta": "Águas de Lindóia fica em qual estado brasileiro?",
-      "alternativas": ["Minas Gerais", "São Paulo", "Rio de Janeiro"],
-      "correta": 1,
+      "respostaCorreta": "São Paulo",
+      "respostasErradas": [
+        "Minas Gerais",
+        "Rio de Janeiro"
+      ],
       "explicacao": "A cidade fica no interior de São Paulo, na região da Serra da Mantiqueira, e é uma das principais estâncias hidrominerais do Brasil."
     }
   ]

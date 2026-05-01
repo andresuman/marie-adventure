@@ -240,8 +240,11 @@ Formato obrigatório:
   "fase1": [
     {
       "pergunta": "Texto da pergunta",
-      "alternativas": ["A", "B", "C"],
-      "correta": 1,
+      "respostaCorreta": "Alternativa correta",
+      "respostasErradas": [
+        "Alternativa errada 1",
+        "Alternativa errada 2"
+      ],
       "explicacao": "Texto exibido após responder."
     }
   ],
@@ -251,8 +254,10 @@ Formato obrigatório:
 
 - `fase1`: perguntas sobre Marie Curie, visita de 1926 e Thermas de Lindoya.
 - `fase2`: perguntas sobre Águas de Lindóia, legado histórico e contexto de 2026.
-- `correta` é índice zero-based (`0`, `1` ou `2`).
-- Manter exatamente 3 alternativas por pergunta: `QuizScene` posiciona 3 botões fixos (`btnYs = [100, 150, 200]`).
+- Cada pergunta deve ter exatamente 1 `respostaCorreta` e exatamente 2 itens em `respostasErradas`.
+- Não usar o formato antigo com `alternativas` + índice `correta`.
+- `QuizScene` monta as 3 alternativas a partir de `respostaCorreta + respostasErradas`, embaralha a ordem e recalcula internamente o índice correto.
+- Manter exatamente 3 alternativas no total por pergunta: `QuizScene` posiciona 3 botões fixos (`btnYs = [100, 150, 200]`).
 
 ### Sorteio e blocos em GameScene
 
@@ -295,12 +300,14 @@ Payload esperado em `init(data)`:
 ```js
 {
   pergunta: string,
-  alternativas: string[],
-  correta: number,
+  respostaCorreta: string,
+  respostasErradas: string[], // exatamente 2 itens
   explicacao: string,
   gameScene: GameScene
 }
 ```
+
+`QuizScene.init()` chama `_montarAlternativasEmbaralhadas(respostaCorreta, respostasErradas)` para criar `this.alternativas` e `this.correta` somente como estado interno da cena.
 
 Controles:
 - Teclado: `↑/↓` selecionam alternativa; `Enter` ou `Espaço` confirmam; `1/2/3` respondem diretamente; `Esc` responde como erro (`indice = -1`).
@@ -308,7 +315,7 @@ Controles:
 - Após responder, `Enter` ou `Espaço` também fecham o quiz.
 
 Feedback:
-- Correto: botão correto verde, texto `✔  CORRETO!  +500 pontos!`, SFX `_sndCorrect()`.
+- Correto: botão correto verde, texto `✔  CORRETO!`, SFX `_sndCorrect()`.
 - Errado: botão escolhido vermelho, correto verde, texto com a resposta correta, SFX `_sndWrong()`.
 - A explicação histórica sempre é exibida antes de continuar.
 - `window.QuizStats.registrar(this._acertou)` é chamado exatamente uma vez por resposta.

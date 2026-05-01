@@ -2,14 +2,36 @@ class QuizScene extends Phaser.Scene {
     constructor() { super({ key: 'QuizScene' }); }
 
     init(data) {
+        const alternativasEmbaralhadas = this._montarAlternativasEmbaralhadas(
+            data.respostaCorreta,
+            data.respostasErradas
+        );
+
         this.pergunta     = data.pergunta;
-        this.alternativas = data.alternativas;
-        this.correta      = data.correta;
+        this.alternativas = alternativasEmbaralhadas.alternativas;
+        this.correta      = alternativasEmbaralhadas.correta;
         this.explicacao   = data.explicacao;
         this.gameScene    = data.gameScene;
         this.respondeu    = false;
         this._acertou     = false;
         this._selectedIndex = 0;
+    }
+
+    _montarAlternativasEmbaralhadas(respostaCorreta, respostasErradas) {
+        const itens = [
+            { texto: respostaCorreta, correta: true },
+            ...respostasErradas.map(texto => ({ texto, correta: false })),
+        ];
+
+        for (let i = itens.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [itens[i], itens[j]] = [itens[j], itens[i]];
+        }
+
+        return {
+            alternativas: itens.map(item => item.texto),
+            correta: itens.findIndex(item => item.correta),
+        };
     }
 
     create() {
