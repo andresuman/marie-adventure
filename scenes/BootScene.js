@@ -9,26 +9,6 @@ class BootScene extends Phaser.Scene {
         this.load.image('marie_walk3', 'assets/marie_walk3.png');
         this.load.image('marie_walk4', 'assets/marie_walk4.png');
 
-        // Personagens jogáveis da família (mesmo padrão da Marie: idle + 4 frames)
-        this.load.image('andre_idle',  'assets/andre_idle.png');
-        this.load.image('andre_walk1', 'assets/andre_walk1.png');
-        this.load.image('andre_walk2', 'assets/andre_walk2.png');
-        this.load.image('andre_walk3', 'assets/andre_walk3.png');
-        this.load.image('andre_walk4', 'assets/andre_walk4.png');
-
-        this.load.image('thais_idle',  'assets/thais_idle.png');
-        this.load.image('thais_walk1', 'assets/thais_walk1.png');
-        this.load.image('thais_walk2', 'assets/thais_walk2.png');
-        this.load.image('thais_walk3', 'assets/thais_walk3.png');
-        this.load.image('thais_walk4', 'assets/thais_walk4.png');
-
-        // Rafinha: não anda a pé, vai no carrinho (mesmo padrão: idle + 4 frames do carro)
-        this.load.image('rafinha_idle',  'assets/rafinha_idle.png');
-        this.load.image('rafinha_walk1', 'assets/rafinha_walk1.png');
-        this.load.image('rafinha_walk2', 'assets/rafinha_walk2.png');
-        this.load.image('rafinha_walk3', 'assets/rafinha_walk3.png');
-        this.load.image('rafinha_walk4', 'assets/rafinha_walk4.png');
-
         // Inimigos
         this.load.image('capy_walk1', 'assets/capy_walk1.png');
         this.load.image('capy_walk2', 'assets/capy_walk2.png');
@@ -60,33 +40,6 @@ class BootScene extends Phaser.Scene {
             frames: [
                 { key:'marie_walk1' }, { key:'marie_walk2' },
                 { key:'marie_walk3' }, { key:'marie_walk4'  }
-            ], frameRate:8, repeat:-1 });
-
-        // Animações do André (mesmo padrão da Marie)
-        this.anims.create({ key: 'andre-idle',
-            frames: [{ key:'andre_idle' }], frameRate:1, repeat:-1 });
-        this.anims.create({ key: 'andre-walk',
-            frames: [
-                { key:'andre_walk1' }, { key:'andre_walk2' },
-                { key:'andre_walk3' }, { key:'andre_walk4'  }
-            ], frameRate:8, repeat:-1 });
-
-        // Animações da Thais (mesmo padrão da Marie)
-        this.anims.create({ key: 'thais-idle',
-            frames: [{ key:'thais_idle' }], frameRate:1, repeat:-1 });
-        this.anims.create({ key: 'thais-walk',
-            frames: [
-                { key:'thais_walk1' }, { key:'thais_walk2' },
-                { key:'thais_walk3' }, { key:'thais_walk4'  }
-            ], frameRate:8, repeat:-1 });
-
-        // Animações do Rafinha (mesmo padrão da Marie; o "andar" é o carrinho rolando)
-        this.anims.create({ key: 'rafinha-idle',
-            frames: [{ key:'rafinha_idle' }], frameRate:1, repeat:-1 });
-        this.anims.create({ key: 'rafinha-walk',
-            frames: [
-                { key:'rafinha_walk1' }, { key:'rafinha_walk2' },
-                { key:'rafinha_walk3' }, { key:'rafinha_walk4'  }
             ], frameRate:8, repeat:-1 });
 
         // Animações da capivara

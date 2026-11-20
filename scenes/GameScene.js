@@ -10,16 +10,6 @@ const CAPY_SPEED  = 60;
 const LEVEL_WIDTH = 1946;   // largura exata do background.png (fase 1)
 const TIME_START  = 60;     // 1 minuto em segundos
 
-// Personagens jogáveis: textura idle + chaves das animações criadas em BootScene.
-// A escolha vem de CharacterSelectScene (data.character) ou do registry
-// (GameOver/WinScene reiniciam direto aqui, sem passar pela seleção); padrão: Marie.
-const CHARACTERS = {
-    marie: { idle: 'marie_idle', idleAnim: 'marie-idle', walkAnim: 'marie-walk' },
-    andre: { idle: 'andre_idle', idleAnim: 'andre-idle', walkAnim: 'andre-walk' },
-    thais: { idle: 'thais_idle', idleAnim: 'thais-idle', walkAnim: 'thais-walk' },
-    rafinha: { idle: 'rafinha_idle', idleAnim: 'rafinha-idle', walkAnim: 'rafinha-walk' },
-};
-
 // Parâmetros específicos da fase 2 (mais difícil: capivaras mais rápidas, fase mais longa)
 const LEVEL_WIDTH_2 = 2972; // largura exata do background2.png
 const CAPY_SPEED_2  = 85;   // capivaras 40% mais rápidas na fase 2
@@ -44,11 +34,6 @@ class GameScene extends Phaser.Scene {
         this.level       = data && data.level ? data.level : 1;
         this.score       = data && data.score ? data.score : 0;  // carrega pontuação da fase anterior
         this.lives       = data && data.lives ? data.lives : LIVES_START;  // carrega vidas da fase anterior
-        // Personagem escolhido na CharacterSelectScene; o registry cobre o restart
-        // de GameOver/WinScene e a transição de fase, que não passam character.
-        this.character   = (data && data.character) || this.registry.get('character') || 'marie';
-        if (!CHARACTERS[this.character]) this.character = 'marie';
-        this._charCfg    = CHARACTERS[this.character];
         this.gameTime    = TIME_START;
         this.dead        = false;
         this.invincible  = false;
@@ -90,18 +75,14 @@ class GameScene extends Phaser.Scene {
             .setDepth(10);
         this.bottle.refreshBody();
 
-        // ── Personagem escolhido (this.marie é o jogador, seja qual for o personagem) ──
-        this.marie = this.physics.add.sprite(80, GROUND_Y - 50, this._charCfg.idle)
+        // ── Marie Curie ──────────────────────────────────────────────────────
+        this.marie = this.physics.add.sprite(80, GROUND_Y - 50, 'marie_idle')
             .setScale(MARIE_SCALE)
             .setCollideWorldBounds(false)
             .setDepth(10);
 
-        // Hitbox proporcional ao sprite do personagem — para a Marie (192×302)
-        // os valores são os mesmos de antes; André e Thais são mais estreitos.
-        const fw = this.marie.frame.width;
-        const fh = this.marie.frame.height;
-        this.marie.body.setSize(fw * 0.55, fh * 0.80);
-        this.marie.body.setOffset(fw * 0.22, fh * 0.10);
+        this.marie.body.setSize(192 * 0.55, 302 * 0.80);
+        this.marie.body.setOffset(192 * 0.22, 302 * 0.10);
 
         // ── Blocos coletáveis do quiz ─────────────────────────────────────────
         this._sortearQuiz();
@@ -181,8 +162,8 @@ class GameScene extends Phaser.Scene {
         }
 
         // ── Animação ─────────────────────────────────────────────────────────
-        if (vx !== 0) this.marie.anims.play(this._charCfg.walkAnim, true);
-        else          this.marie.anims.play(this._charCfg.idleAnim, true);
+        if (vx !== 0) this.marie.anims.play('marie-walk', true);
+        else          this.marie.anims.play('marie-idle', true);
 
         // ── Detectar passagem limpa + limpar capivaras fora da tela ──────────
         const marieOnGround = this.marie.body.blocked.down || this.marie.body.touching.down;
@@ -404,7 +385,7 @@ class GameScene extends Phaser.Scene {
             this.sndWin();
             this.time.delayedCall(PHASE_TRANS_DELAY, () => {
                 this.scene.stop('HUDScene');
-                this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives, character: this.character });
+                this.scene.start('GameScene', { level: 2, score: this.score, lives: this.lives });
             });
         } else {
             // Fase 2 concluída — fanfarra de vitória final
