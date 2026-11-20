@@ -41,7 +41,8 @@ marie-adventure/
 │   └── quiz.json           # Banco de perguntas por fase (fase1/fase2)
 ├── scenes/
 │   ├── BootScene.js        # preload() de assets + create() de animações → inicia TitleScene
-│   ├── TitleScene.js       # Tela inicial; toggle de música; high score; inicia GameScene
+│   ├── TitleScene.js       # Tela inicial; toggle de música; high score; inicia CharacterSelectScene
+│   ├── CharacterSelectScene.js # Escolha de personagem (Marie, André, Thais); salva no registry; inicia GameScene
 │   ├── GameScene.js        # Loop principal; física; capivaras; blocos de perguntas; SFX; controles
 │   ├── HUDScene.js         # Overlay de pontos/vidas/tempo/combo (cena paralela)
 │   ├── QuizScene.js        # Overlay do desafio de perguntas, alternativas, feedback e explicação
@@ -128,17 +129,19 @@ Usado em `TitleScene` (exibe recorde), `GameOverScene` e `WinScene` (verifica/ex
 ## Fluxo de cenas
 
 ```
-BootScene → TitleScene → GameScene (fase 1) + HUDScene (paralela)
-                         ↕ QuizScene (overlay, quando coleta bloco)
-                                ↓
-                         GameScene (fase 2) + HUDScene (paralela)
-                         ↕ QuizScene (overlay, quando coleta bloco)
-                                ↓
-                            WinScene
-                  (ou GameOverScene de qualquer fase)
-                                ↓
-                         GameScene (restart, fase 1)
+BootScene → TitleScene → CharacterSelectScene → GameScene (fase 1) + HUDScene (paralela)
+                                                  ↕ QuizScene (overlay, quando coleta bloco)
+                                                         ↓
+                                                  GameScene (fase 2) + HUDScene (paralela)
+                                                  ↕ QuizScene (overlay, quando coleta bloco)
+                                                         ↓
+                                                     WinScene
+                                           (ou GameOverScene de qualquer fase)
+                                                         ↓
+                                                  GameScene (restart, fase 1)
 ```
+
+- A escolha de personagem é salva no registry (`this.registry.set('character', key)`) pela CharacterSelectScene. GameScene lê `data.character`, depois o registry, e cai para `'marie'` se não houver nada válido — assim o restart de GameOver/WinScene e a transição de fase mantêm o mesmo personagem sem passar pela seleção.
 
 - `HUDScene` é lançada com `this.scene.launch('HUDScene', { gameScene: this, level: this.level })`.
 - `HUDScene` recebe referência à `GameScene` em `init(data)` e escuta eventos via `this.gameScene.events.on(...)`.
@@ -479,6 +482,10 @@ Tamanho da fonte escala com o combo: 14px (normal), 16px (combo ≥3), 18px (com
 |---|---|---|
 | `marie_idle` | marie_idle.png | Animação idle |
 | `marie_walk1–4` | marie_walk1–4.png | Animação caminhada |
+| `andre_idle` | andre_idle.png | Animação idle (André Suman, torcedor do Ravens) |
+| `andre_walk1–4` | andre_walk1–4.png | Animação caminhada (André) |
+| `thais_idle` | thais_idle.png | Animação idle (Thais Gorzalka, química e maratonista) |
+| `thais_walk1–4` | thais_walk1–4.png | Animação caminhada (Thais) |
 | `capy_walk1–3` | capy_walk1–3.png | Animação capivara andando |
 | `capy_flat1–2` | capy_flat1–2.png | Capivara pisada |
 | `ground` | ground.png | Tile de chão fase 1 (64×48) |
@@ -501,6 +508,10 @@ Para adicionar/alterar perguntas: editar `data/quiz.json` e manter `this.load.js
 |---|---|---|---|
 | `marie-idle` | marie_idle | 1 | -1 |
 | `marie-walk` | marie_walk1–4 | 8 | -1 |
+| `andre-idle` | andre_idle | 1 | -1 |
+| `andre-walk` | andre_walk1–4 | 8 | -1 |
+| `thais-idle` | thais_idle | 1 | -1 |
+| `thais-walk` | thais_walk1–4 | 8 | -1 |
 | `capy-walk` | capy_walk1–3 | 6 | -1 |
 
 ---

@@ -23,7 +23,7 @@ const config = {
             debug: false
         }
     },
-    scene: [BootScene, TitleScene, GameScene, HUDScene, GameOverScene, WinScene, QuizScene]
+    scene: [BootScene, TitleScene, CharacterSelectScene, GameScene, HUDScene, GameOverScene, WinScene, QuizScene]
 };
 
 new Phaser.Game(config);

@@ -89,7 +89,7 @@ class TitleScene extends Phaser.Scene {
         btn.on('pointerdown',  () => {
             this._ensureAudioUnlocked();
             this._ensureMusicStarted();
-            this.scene.start('GameScene');
+            this.scene.start('CharacterSelectScene');
         });
 
         // Botão de música: ícone desenhado (caixinha + ondas / X) + label
@@ -192,7 +192,7 @@ class TitleScene extends Phaser.Scene {
         this.input.keyboard.once('keydown', () => {
             this._ensureAudioUnlocked();
             this._ensureMusicStarted();
-            this.scene.start('GameScene');
+            this.scene.start('CharacterSelectScene');
         });
 
         // iOS/Safari: às vezes só destrava áudio em 'pointerdown' do canvas.
