@@ -22,6 +22,13 @@ class BootScene extends Phaser.Scene {
         this.load.image('thais_walk3', 'assets/thais_walk3.png');
         this.load.image('thais_walk4', 'assets/thais_walk4.png');
 
+        // Rafinha: não anda a pé, vai no carrinho (mesmo padrão: idle + 4 frames do carro)
+        this.load.image('rafinha_idle',  'assets/rafinha_idle.png');
+        this.load.image('rafinha_walk1', 'assets/rafinha_walk1.png');
+        this.load.image('rafinha_walk2', 'assets/rafinha_walk2.png');
+        this.load.image('rafinha_walk3', 'assets/rafinha_walk3.png');
+        this.load.image('rafinha_walk4', 'assets/rafinha_walk4.png');
+
         // Inimigos
         this.load.image('capy_walk1', 'assets/capy_walk1.png');
         this.load.image('capy_walk2', 'assets/capy_walk2.png');
@@ -71,6 +78,15 @@ class BootScene extends Phaser.Scene {
             frames: [
                 { key:'thais_walk1' }, { key:'thais_walk2' },
                 { key:'thais_walk3' }, { key:'thais_walk4'  }
+            ], frameRate:8, repeat:-1 });
+
+        // Animações do Rafinha (mesmo padrão da Marie; o "andar" é o carrinho rolando)
+        this.anims.create({ key: 'rafinha-idle',
+            frames: [{ key:'rafinha_idle' }], frameRate:1, repeat:-1 });
+        this.anims.create({ key: 'rafinha-walk',
+            frames: [
+                { key:'rafinha_walk1' }, { key:'rafinha_walk2' },
+                { key:'rafinha_walk3' }, { key:'rafinha_walk4'  }
             ], frameRate:8, repeat:-1 });
 
         // Animações da capivara

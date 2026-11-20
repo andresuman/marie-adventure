@@ -17,6 +17,7 @@ const CHARACTERS = {
     marie: { idle: 'marie_idle', idleAnim: 'marie-idle', walkAnim: 'marie-walk' },
     andre: { idle: 'andre_idle', idleAnim: 'andre-idle', walkAnim: 'andre-walk' },
     thais: { idle: 'thais_idle', idleAnim: 'thais-idle', walkAnim: 'thais-walk' },
+    rafinha: { idle: 'rafinha_idle', idleAnim: 'rafinha-idle', walkAnim: 'rafinha-walk' },
 };
 
 // Parâmetros específicos da fase 2 (mais difícil: capivaras mais rápidas, fase mais longa)

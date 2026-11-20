@@ -36,14 +36,15 @@ class CharacterSelectScene extends Phaser.Scene {
         back.on('pointerdown', () => this.scene.start('TitleScene'));
 
         // ── Personagens (mesmo conteúdo do protótipo character-select.html) ──
+        // Rafinha usa escala menor no card: o carrinho é largo (335px), os outros têm ~190px.
         const CHARACTERS = [
-            { key: 'marie', name: 'MARIE CURIE',   desc: 'Duas vezes Prêmio Nobel, de Física e de Química.', tag: '▶ SELECIONADA ◀', idle: 'marie_idle' },
-            { key: 'andre', name: 'ANDRÉ SUMAN',   desc: 'Torcedor do Baltimore Ravens.',                   tag: '▶ SELECIONADO ◀',  idle: 'andre_idle' },
-            { key: 'thais', name: 'THAIS GORZALKA', desc: 'Química e maratonista.',                        tag: '▶ SELECIONADA ◀', idle: 'thais_idle' },
+            { key: 'marie', name: 'MARIE CURIE',   desc: 'Duas vezes Prêmio Nobel, de Física e de Química.', tag: '▶ SELECIONADA ◀', idle: 'marie_idle', scale: 0.30 },
+            { key: 'andre', name: 'ANDRÉ SUMAN',   desc: 'Torcedor do Baltimore Ravens.',                   tag: '▶ SELECIONADO ◀',  idle: 'andre_idle', scale: 0.30 },
+            { key: 'thais', name: 'THAIS GORZALKA', desc: 'Química e maratonista.',                        tag: '▶ SELECIONADA ◀', idle: 'thais_idle', scale: 0.30 },
+            { key: 'rafinha', name: 'RAFINHA',     desc: 'Fã de Ray Conniff.',                            tag: '▶ SELECIONADO ◀',  idle: 'rafinha_idle', scale: 0.24 },
         ];
-        const CARD_W = 150, CARD_H = 180, CARD_Y = 128;
-        const CARD_XS = [80, 240, 400];
-        const SPRITE_SCALE = 0.30; // 302px de altura → ~91px na tela
+        const CARD_W = 110, CARD_H = 180, CARD_Y = 128;
+        const CARD_XS = [60, 178, 296, 414];
 
         this._cards = [];
         CHARACTERS.forEach((ch, i) => {
@@ -55,7 +56,7 @@ class CharacterSelectScene extends Phaser.Scene {
             bg.setStrokeStyle(3, 0xffffff);
             container.add(bg);
 
-            const sprite = this.add.image(0, 88, ch.idle).setScale(SPRITE_SCALE);
+            const sprite = this.add.image(0, 88, ch.idle).setScale(ch.scale);
             container.add(sprite);
 
             const name = txt(0, 146, ch.name, {
@@ -109,8 +110,8 @@ class CharacterSelectScene extends Phaser.Scene {
         this.tweens.add({ targets: btn, alpha: 0.5, duration: 600, yoyo: true, repeat: -1 });
 
         // Teclado: setas trocam o personagem, Enter começa, Esc volta
-        this.input.keyboard.on('keydown-LEFT',  () => this._select((this._selected + 2) % 3));
-        this.input.keyboard.on('keydown-RIGHT', () => this._select((this._selected + 1) % 3));
+        this.input.keyboard.on('keydown-LEFT',  () => this._select((this._selected + 3) % 4));
+        this.input.keyboard.on('keydown-RIGHT', () => this._select((this._selected + 1) % 4));
         this.input.keyboard.on('keydown-ENTER', () => this._startGame());
         this.input.keyboard.on('keydown-ESC',   () => this.scene.start('TitleScene'));
 
