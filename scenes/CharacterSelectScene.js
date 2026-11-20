@@ -68,9 +68,9 @@ class CharacterSelectScene extends Phaser.Scene {
             container.add(name);
 
             const desc = this.add.text(0, 160, ch.desc, {
-                fontFamily: 'monospace', fontSize: '9px', resolution: 3,
-                color: '#ffffff', stroke: '#000000', strokeThickness: 3,
-                align: 'center', wordWrap: { width: CARD_W - 16 }, lineSpacing: 2,
+                fontFamily: 'monospace', fontSize: '10px', resolution: 3,
+                color: '#ffffff', stroke: '#000000', strokeThickness: 2,
+                align: 'center', wordWrap: { width: CARD_W - 16 }, lineSpacing: 4,
             }).setOrigin(0.5, 0);
             container.add(desc);
 
